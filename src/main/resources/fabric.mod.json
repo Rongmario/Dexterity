@@ -20,13 +20,13 @@
   "environment": "*",
   "entrypoints": {
     "main": [
-      "xyz.rongmario.dexterity.DexterityMain"
+      "zone.rong.dexterity.DexterityMain"
     ],
     "client": [
-      "xyz.rongmario.dexterity.DexterityClient"
+      "zone.rong.dexterity.DexterityClient"
     ],
     "mm:early_risers": [
-      "xyz.rongmario.dexterity.DexterityASM"
+      "zone.rong.dexterity.DexterityASM"
     ]
   },
   "mixins": [

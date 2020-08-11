@@ -1,6 +1,6 @@
 {
   "required": true,
-  "package": "xyz.rongmario.dexterity.rpg.skill.client.mixin",
+  "package": "zone.rong.dexterity.rpg.skill.client.mixin",
   "compatibilityLevel": "JAVA_8",
   "client": [
     "MixinHeldItemRenderer",

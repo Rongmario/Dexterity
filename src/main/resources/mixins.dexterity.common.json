@@ -1,6 +1,6 @@
 {
   "required": true,
-  "package": "xyz.rongmario.dexterity.rpg.skill.common.mixin",
+  "package": "zone.rong.dexterity.rpg.skill.common.mixin",
   "compatibilityLevel": "JAVA_8",
   "mixins": [
     "MixinBlockItem",
