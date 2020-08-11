@@ -21,13 +21,17 @@
  *   WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package zone.rong.dexterity.rpg.skill.perk.api;
+package zone.rong.dexterity.api;
 
-import zone.rong.dexterity.api.Unlockable;
-import zone.rong.dexterity.rpg.skill.types.Skill;
+import net.minecraft.item.ItemStack;
+import net.minecraft.text.MutableText;
 
-public interface Perk extends Unlockable {
+public interface Unlockable {
 
-    Skill<?> getParentSkill();
+    MutableText getName();
+
+    int getColour();
+
+    ItemStack getDisplayItem();
 
 }

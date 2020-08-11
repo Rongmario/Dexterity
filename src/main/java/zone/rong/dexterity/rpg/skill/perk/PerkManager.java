@@ -192,7 +192,7 @@ public class PerkManager implements Clearable {
     private boolean reachedCooldown(Map.Entry<BasePerk, Entry> pair) {
         boolean reached = pair.getValue().endTick <= this.tick;
         if (reached && !player.world.isClient) {
-            player.sendMessage(pair.getKey().getDisplayName().shallowCopy().append(new TranslatableText("message.dexterity.perk.refresh")).formatted(Formatting.GREEN), true);
+            player.sendMessage(pair.getKey().getName().shallowCopy().append(new TranslatableText("message.dexterity.perk.refresh")).formatted(Formatting.GREEN), true);
         }
         return reached;
     }

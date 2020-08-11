@@ -27,12 +27,14 @@ import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
 import net.minecraft.item.ItemConvertible;
 import net.minecraft.item.ItemStack;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
 import net.minecraft.text.TextColor;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
 import zone.rong.dexterity.DexterityData;
+import zone.rong.dexterity.api.Unlockable;
 import zone.rong.dexterity.rpg.skill.perk.BasePerk;
 import zone.rong.dexterity.rpg.skill.perk.PerkBuilder;
 import zone.rong.dexterity.rpg.skill.trait.Trait;
@@ -41,10 +43,10 @@ import java.util.Set;
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
 
-public class Skill<S extends Skill<S>> implements Comparable<S> {
+public class Skill<S extends Skill<S>> implements Comparable<S>, Unlockable {
 
     private final String namespace, path;
-    private final Text displayName, description;
+    private final MutableText displayName, description;
     private final Identifier identifier;
     private final ItemStack displayItem;
     private final TextColor colourObject;
@@ -100,6 +102,11 @@ public class Skill<S extends Skill<S>> implements Comparable<S> {
         return identifier.toString();
     }
 
+    @Override
+    public MutableText getName() {
+        return displayName;
+    }
+
     public String getNamespace() {
         return namespace;
     }
@@ -122,10 +129,6 @@ public class Skill<S extends Skill<S>> implements Comparable<S> {
 
     public Set<Trait> getTraitLookup() {
         return traitLookup;
-    }
-
-    public Text getDisplayName() {
-        return displayName;
     }
 
     public int getColour() {

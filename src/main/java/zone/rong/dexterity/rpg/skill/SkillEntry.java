@@ -45,19 +45,27 @@ public class SkillEntry {
 
     private long totalXp;
     private int currentXp;
-    private int totalLevel = 0;
 
-    private final ThreadLocal<Integer> levelPriorToCheck = ThreadLocal.withInitial(this::getLevel);
+    private int totalLevelPriorCheck = 0;
+    private int totalLevel = 0;
 
     public SkillEntry(ServerPlayerEntity player, Skill<?> skill) {
         this.player = player;
         this.skill = skill;
     }
 
-    void check() {
+    void check(boolean recursive) {
+        if (!recursive) {
+            this.totalLevelPriorCheck = this.totalLevel;
+        }
         int difference = getXpNeededForNextLevel();
         if (difference <= 0) {
             ++this.totalLevel;
+            if (this.totalLevel == 1) {
+                PacketByteBuf packet = new PacketByteBuf(Unpooled.buffer());
+                packet.writeInt(DexterityData.SKILLS.getRawId(skill));
+                ServerSidePacketRegistry.INSTANCE.sendToPlayer(player, DexterityPackets.S2C_SKILL_UNLOCKED, packet);
+            }
             this.currentXp = Math.abs(difference);
             if (this.totalLevel % 10 == 0 && !(player.server instanceof IntegratedServer)) {
                 if (this.totalLevel % 50 == 0) {
@@ -65,17 +73,15 @@ public class SkillEntry {
                 }
                 player.server.getPlayerManager().broadcastChatMessage(
                         new TranslatableText("message.dexterity.congratulations",
-                                player.getName(), skill.getDisplayName(), totalLevel)
+                                player.getName(), skill.getName(), totalLevel)
                                 .styled(style -> style.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, skill.getDescription()))), MessageType.CHAT, player.getUuid());
             }
             skill.getTraitLookup().stream().filter(t -> t.getLevelBarrier() <= this.totalLevel).forEach(t -> t.applyModification(player));
-            if (this.currentXp > 0) {
-                check();
-            }
-        } else if (levelPriorToCheck.get() < this.totalLevel) {
+            check(true);
+        } else if (recursive && this.totalLevelPriorCheck < this.totalLevel) {
             PacketByteBuf packet = new PacketByteBuf(Unpooled.buffer());
             packet.writeInt(DexterityData.SKILLS.getRawId(skill));
-            packet.writeInt(levelPriorToCheck.get());
+            packet.writeInt(this.totalLevelPriorCheck);
             packet.writeInt(totalLevel);
             ServerSidePacketRegistry.INSTANCE.sendToPlayer(player, DexterityPackets.S2C_LEVEL_REACHED, packet);
         }
@@ -101,8 +107,7 @@ public class SkillEntry {
             this.totalXp += xp;
             this.currentXp += xp;
         }
-        this.levelPriorToCheck.set(this.totalLevel);
-        check();
+        check(false);
     }
 
     public Skill<?> getSkill() {

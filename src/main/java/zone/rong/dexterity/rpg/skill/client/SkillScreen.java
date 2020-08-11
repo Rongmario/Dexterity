@@ -175,7 +175,7 @@ public class SkillScreen extends Screen {
     }
 
     private Text getSkillEntryFormattedText(Skill skill, ImmutableSkillEntry entry) {
-        return skill.getDisplayName().shallowCopy().append(" Lvl: ").append(new LiteralText(String.valueOf(entry.totalLevels)).formatted(Formatting.GREEN));
+        return skill.getName().shallowCopy().append(" Lvl: ").append(new LiteralText(String.valueOf(entry.totalLevels)).formatted(Formatting.GREEN));
     }
 
     private ButtonWidget createButton(Skill skill, int x, int y, int width, int height, Text message, ButtonWidget.PressAction onPress) {

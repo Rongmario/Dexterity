@@ -31,8 +31,8 @@ import net.fabricmc.fabric.api.event.player.UseItemCallback;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
-import net.minecraft.text.BaseText;
 import net.minecraft.text.LiteralText;
+import net.minecraft.text.MutableText;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Formatting;
@@ -54,7 +54,7 @@ import java.util.function.IntUnaryOperator;
 public class BasePerk implements Perk {
 
     protected final String name;
-    protected final BaseText displayName;
+    protected final MutableText displayName;
     protected final Skill<?> parentSkill;
     protected final IntUnaryOperator levelApplyToCooldown, levelApplyToDuration;
     protected final BiPredicate<PlayerEntity, ItemStack> readyCondition;
@@ -80,13 +80,18 @@ public class BasePerk implements Perk {
     }
 
     @Override
-    public String getName() {
-        return name;
+    public MutableText getName() {
+        return displayName;
     }
 
     @Override
-    public BaseText getDisplayName() {
-        return displayName;
+    public int getColour() {
+        return parentSkill.getColour();
+    }
+
+    @Override
+    public ItemStack getDisplayItem() {
+        return parentSkill.getDisplayItem();
     }
 
     @Override
@@ -196,7 +201,7 @@ public class BasePerk implements Perk {
         void end(PlayerEntity player, World world, ItemStack stack);
 
         default void callEnd(BasePerk perk, PlayerEntity player, World world, ItemStack stack) {
-            player.sendMessage(perk.getDisplayName().shallowCopy().append(new TranslatableText("message.dexterity.perk.diminish")).formatted(Formatting.AQUA), true);
+            player.sendMessage(perk.getName().shallowCopy().append(new TranslatableText("message.dexterity.perk.diminish")).formatted(Formatting.AQUA), true);
             end(player, world, stack);
         }
 

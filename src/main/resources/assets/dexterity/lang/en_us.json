@@ -6,6 +6,7 @@
     "perk.dexterity.super_breaker": "Super Breaker",
     "perk.dexterity.giga_drill_break": "Giga Drill Break",
     "perk.dexterity.berserk": "Berserk",
+    "toast.dexterity.unlock": "%s Unlocked!",
     "toast.dexterity.level_up": "Level %d %s %d",
     "message.dexterity.congratulations": "%s has reached %s level %d!",
     "message.dexterity.fist": "Fist",

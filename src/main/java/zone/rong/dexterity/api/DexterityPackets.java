@@ -34,6 +34,7 @@ import net.minecraft.network.PacketByteBuf;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Identifier;
 import zone.rong.dexterity.DexterityData;
+import zone.rong.dexterity.rpg.skill.client.UnlockToast;
 import zone.rong.dexterity.rpg.skill.types.Skill;
 import zone.rong.dexterity.rpg.skill.SkillEntry;
 import zone.rong.dexterity.rpg.skill.client.ImmutableSkillEntry;
@@ -49,6 +50,7 @@ public class DexterityPackets {
     public static final Identifier C2S_SKILLS_QUERY = new Identifier("dexterity", "c2s_skills_query");
 
     public static final Identifier S2C_SKILLS_RESPONSE = new Identifier("dexterity", "c2s_skills_response");
+    public static final Identifier S2C_SKILL_UNLOCKED = new Identifier("dexterity", "s2c_skill_unlocked");
     public static final Identifier S2C_LEVEL_REACHED = new Identifier("dexterity", "s2c_level_reached");
     public static final Identifier S2C_READY = new Identifier("dexterity", "s2c_ready");
 
@@ -67,6 +69,10 @@ public class DexterityPackets {
             int levelPriorToCheck = packet.readInt();
             int level = packet.readInt();
             ctx.getTaskQueue().execute(() -> MinecraftClient.getInstance().getToastManager().add(new SkillToast(skill, levelPriorToCheck, level)));
+        });
+        ClientSidePacketRegistry.INSTANCE.register(S2C_SKILL_UNLOCKED, (ctx, packet) -> {
+            Skill<?> skill = DexterityData.SKILLS.get(packet.readInt());
+            ctx.getTaskQueue().execute(() -> MinecraftClient.getInstance().getToastManager().add(new UnlockToast(skill)));
         });
         ClientSidePacketRegistry.INSTANCE.register(S2C_READY, (ctx, packet) -> {
             boolean ready = packet.readBoolean();
