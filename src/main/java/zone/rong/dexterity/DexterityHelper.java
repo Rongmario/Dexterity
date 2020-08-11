@@ -52,10 +52,10 @@ public class DexterityHelper {
                 .perkTrigger(InteractionTrigger.BREAK_BLOCK)
                 .start((player, world, stack) -> {
                     float speed = ((SkillHandler) player).getSkillManager().getSkillEntry(skill).getLevel() >= 50 ? 0.8F : 0.6F;
-                    player.getAttributeInstance(DexterityEntityAttributes.MINING_SPEED_PERK).addTemporaryModifier(new EntityAttributeModifier(DexterityData.MINING_SPEED_PERK_UUID, "Bonus Dexterity Mining Speed", speed, EntityAttributeModifier.Operation.ADDITION));
+                    player.getAttributeInstance(DexterityEntityAttributes.MINING_SPEED_PERK).addTemporaryModifier(new EntityAttributeModifier(DexterityEntityAttributes.MINING_SPEED_PERK_UUID, "Bonus Dexterity Mining Speed", speed, EntityAttributeModifier.Operation.ADDITION));
                     return ActionResult.PASS;
                 })
-                .end((player, world, stack) -> player.getAttributeInstance(DexterityEntityAttributes.MINING_SPEED_PERK).removeModifier(DexterityData.MINING_SPEED_PERK_UUID))
+                .end((player, world, stack) -> player.getAttributeInstance(DexterityEntityAttributes.MINING_SPEED_PERK).removeModifier(DexterityEntityAttributes.MINING_SPEED_PERK_UUID))
                 .build(name, skill, level -> 200, level -> 20 + (level * 4));
     }
 

@@ -80,6 +80,7 @@ public class DexterityASM implements Runnable {
         List<ItemStack> builtStacks = state.getDroppedStacks(builder);
         if (entity instanceof ServerPlayerEntity) {
             if (((SkillHandler) entity).getPerkManager().isPerkActive(DexteritySkills.SUPER_BREAK) && ((ServerPlayerEntity) entity).getRandom().nextFloat() >= 0.5F) {
+                // Perhaps use a min capacity list construction here, less allocations.
                 return builtStacks.stream().flatMap(stack -> Stream.generate(() -> stack).limit(3)).collect(Collectors.toList());
             }
         }

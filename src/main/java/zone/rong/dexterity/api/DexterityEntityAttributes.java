@@ -29,11 +29,17 @@ import net.minecraft.entity.attribute.ClampedEntityAttribute;
 import net.minecraft.entity.attribute.EntityAttribute;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.registry.Registry;
+
+import java.util.UUID;
 
 public class DexterityEntityAttributes {
 
     public static final EntityAttribute MINING_SPEED_PERK = Registry.register(Registry.ATTRIBUTE, new Identifier("dexterity", "mining_speed_perk"), new ClampedEntityAttribute("attribute.name.mining_speed_perk", 2F, 0F, 200F)).setTracked(true);
+
+    public static final UUID MINING_SPEED_PERK_UUID = MathHelper.randomUuid();
+    public static final UUID DAMAGE_AMOUNT_PERK_UUID = MathHelper.randomUuid();
 
     public static void init() {
         FabricDefaultAttributeRegistry.register(EntityType.PLAYER, PlayerEntity.createPlayerAttributes().add(MINING_SPEED_PERK, 0.0F));

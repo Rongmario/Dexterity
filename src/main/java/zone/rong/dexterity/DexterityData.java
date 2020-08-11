@@ -40,9 +40,6 @@ public class DexterityData {
     public static final String PLAYER_UUID_KEY = "DexterityUUID";
     public static final String PLAYER_UUID_XP_KEY = "DexterityUUIDXPStore";
 
-    public static final UUID MINING_SPEED_PERK_UUID = MathHelper.randomUuid();
-    public static final UUID DAMAGE_AMOUNT_PERK_UUID = MathHelper.randomUuid();
-
     public static final Identifier MANA_BAR = new Identifier("dexterity", "textures/gui/manabar_new.png");
 
     public static final RegistryKey<Registry<Skill<?>>> SKILL_KEY = RegistryKey.ofRegistry(new Identifier("dexterity", "skills"));
