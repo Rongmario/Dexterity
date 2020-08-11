@@ -1,3 +1,26 @@
+/*
+ *  * Copyright (c) 2020 Rongmario
+ *  *
+ *  * Permission is hereby granted, free of charge, to any person obtaining
+ *  * a copy of this software and associated documentation files (the
+ *  * "Software"), to deal in the Software without restriction, including
+ *  * without limitation the rights to use, copy, modify, merge, publish,
+ *  * distribute, sublicense, and/or sell copies of the Software, and to
+ *  * permit persons to whom the Software is furnished to do so, subject to
+ *  * the following conditions:
+ *  *
+ *  * The above copyright notice and this permission notice shall be
+ *  * included in all copies or substantial portions of the Software.
+ *  *
+ *  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+ *  * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+ *  * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+ *  * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE
+ *  * LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
+ *  * OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
+ *  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ */
+
 package zone.rong.dexterity.api;
 
 import net.fabricmc.fabric.api.loot.v1.FabricLootPoolBuilder;
@@ -29,15 +52,7 @@ import zone.rong.dexterity.rpg.skill.types.CombatSkill;
 import zone.rong.dexterity.rpg.skill.types.DigSkill;
 import zone.rong.dexterity.rpg.skill.types.Skill;
 
-import static net.minecraft.block.Material.DENSE_ICE;
-import static net.minecraft.block.Material.METAL;
-import static net.minecraft.block.Material.ORGANIC_PRODUCT;
-import static net.minecraft.block.Material.REPAIR_STATION;
-import static net.minecraft.block.Material.SNOW_BLOCK;
-import static net.minecraft.block.Material.SNOW_LAYER;
-import static net.minecraft.block.Material.SOIL;
-import static net.minecraft.block.Material.SOLID_ORGANIC;
-import static net.minecraft.block.Material.STONE;
+import static net.minecraft.block.Material.*;
 
 public class DexteritySkills {
 
@@ -48,12 +63,12 @@ public class DexteritySkills {
     public static final CombatSkill SWORDSMANSHIP = new CombatSkill("swordsmanship", Items.DIAMOND_SWORD, 3264206);
     public static final CombatSkill AXES = new CombatSkill("axes", Items.DIAMOND_AXE, 8061183);
     public static final CombatSkill UNARMED = new CombatSkill("unarmed", Items.BARRIER, 15843965);
-    public static final Skill ALCHEMY = new Skill<>("alchemy", Items.POTION, 16716947);
-    public static final Skill CULTIVATION = new Skill<>("cultivation", Items.FARMLAND, 16383744);
-    public static final Skill AUTOMATION = new Skill<>("automation", Blocks.PISTON, 8750469);
-    public static final Skill CRAFTING = new Skill<>("crafting", Blocks.CRAFTING_TABLE, 16752128);
-    public static final Skill FISHING = new Skill<>("fishing", Items.FISHING_ROD, 2003199);
-    public static final Skill SMITHING = new Skill<>("smithing", Blocks.ANVIL, 12845056);
+    public static final Skill<?> ALCHEMY = new Skill<>("alchemy", Items.POTION, 16716947);
+    public static final Skill<?> CULTIVATION = new Skill<>("cultivation", Items.FARMLAND, 16383744);
+    public static final Skill<?> AUTOMATION = new Skill<>("automation", Blocks.PISTON, 8750469);
+    public static final DigSkill CARPENTRY = new DigSkill("carpentry", Blocks.CRAFTING_TABLE, 16752128);
+    public static final Skill<?> FISHING = new Skill<>("fishing", Items.FISHING_ROD, 2003199);
+    public static final Skill<?> SMITHING = new Skill<>("smithing", Blocks.ANVIL, 12845056);
     public static final Skill<?> ACROBATICS = new Skill<>("acrobatics", Items.ELYTRA, 2599896);
 
     // Perks
@@ -66,8 +81,11 @@ public class DexteritySkills {
             .end(((player, world, stack) -> stack.getTag().remove(DexterityNBT.Skills.RANGED_QUICK_FIRE)))
             .perkTrigger(InteractionTrigger.IMMEDIATE)
             .build("quick_fire", ARCHERY, s -> 200, s -> Math.max(100, Math.floorDiv(s, 32)));
+
     public static final GenericPerk SUPER_BREAK = DexterityHelper.getGenericBlockBreakPerk("super_breaker", MINING);
+
     public static final GenericPerk GIGA_DRILL_BREAK = DexterityHelper.getGenericBlockBreakPerk("giga_drill_break", EXCAVATION);
+
     public static final EmptyHandPerk BERSERK = PerkBuilder.<EmptyHandPerk>of()
             .readyCondition((player, stack) -> stack.isEmpty())
             .start((player, world, stack) -> {
@@ -81,18 +99,71 @@ public class DexteritySkills {
             .build("berserk", UNARMED, s -> 200, s -> 100);
 
     public static void init() {
-        // QUICK_FIRE = Press and Hold
-        ARCHERY.addPerk(QUICK_FIRE).addTool(item -> item instanceof RangedWeaponItem).addEntries(builder -> builder.put(EntityType.CREEPER, 10));
-        MINING.addPerk(SUPER_BREAK).addTool(FabricToolTags.PICKAXES).addTagEntries(builder -> builder.put(BlockTags.ANVIL, 200).put(BlockTags.GOLD_ORES, 50));
-        EXCAVATION.addPerk(GIGA_DRILL_BREAK).addTool(FabricToolTags.SHOVELS);
-        UNARMED.addPerk(BERSERK).addTool(ItemStack.EMPTY);
-        SWORDSMANSHIP.addTool(FabricToolTags.SWORDS);
-        AXES.addTool(FabricToolTags.AXES);
-        ACROBATICS.addTrait(1, player -> player.getDataTracker().set(DexterityEntityTrackers.Player.REAL_BLOCK_REACH, 9.0F));
+        initAcrobatics();
+        initArchery();
+        initAxes();
+        initCarpentry();
+        initExcavation();
+        initMining();
+        initSwordsmanship();
+        initUnarmed();
         prepareAdditionalDropConditions();
     }
 
-    public static void prepareAdditionalDropConditions() {
+    public static void initAcrobatics() {
+        ACROBATICS
+                .addTrait(250, player -> player.getDataTracker().set(DexterityEntityTrackers.Player.REAL_BLOCK_REACH, 6.0F))
+                .addTrait(750, player -> player.getDataTracker().set(DexterityEntityTrackers.Player.REAL_BLOCK_REACH, 7.0F))
+                .addTrait(500, player -> player.getDataTracker().set(DexterityEntityTrackers.Player.REAL_ENTITY_REACH, 6.0F))
+                .addTrait(1000, player -> player.getDataTracker().set(DexterityEntityTrackers.Player.REAL_ENTITY_REACH, 7.0F));
+    }
+
+    private static void initArchery() {
+        // QUICK_FIRE = Press and Hold
+        ARCHERY
+                .addPerk(QUICK_FIRE)
+                .addTool(item -> item instanceof RangedWeaponItem)
+                .addEntries(builder -> builder.put(EntityType.CREEPER, 10));
+    }
+
+    private static void initAxes() {
+        AXES
+                .addTool(FabricToolTags.AXES);
+    }
+
+    private static void initCarpentry() {
+        CARPENTRY
+                .addTool(FabricToolTags.AXES)
+                .addMaterials(BAMBOO, BAMBOO_SAPLING, NETHER_WOOD, WOOD);
+    }
+
+    private static void initExcavation() {
+        EXCAVATION
+                .addPerk(GIGA_DRILL_BREAK)
+                .addTool(FabricToolTags.SHOVELS)
+                .addMaterials(AGGREGATE, ORGANIC_PRODUCT, SNOW_BLOCK, SNOW_LAYER, SOIL);
+    }
+
+    private static void initMining() {
+        MINING
+                .addPerk(SUPER_BREAK)
+                .addTool(FabricToolTags.PICKAXES)
+                .addMaterials(DENSE_ICE, METAL, REDSTONE_LAMP, SHULKER_BOX, STONE, REPAIR_STATION)
+                .addTagEntries(builder -> builder.put(BlockTags.ANVIL, 200).put(BlockTags.GOLD_ORES, 50));
+    }
+
+    private static void initSwordsmanship() {
+        SWORDSMANSHIP
+                .addTool(FabricToolTags.SWORDS);
+    }
+
+    private static void initUnarmed() {
+        UNARMED
+                .addPerk(BERSERK)
+                .addTool(ItemStack.EMPTY);
+    }
+
+    private static void prepareAdditionalDropConditions() {
         LootTableLoadingCallback.EVENT.register(((resourceManager, manager, id, supplier, setter) -> {
             if (id.getPath().startsWith("blocks/")) {
                 Identifier registryName = new Identifier(id.getNamespace(), id.getPath().substring(7));

@@ -1,3 +1,26 @@
+/*
+ *  * Copyright (c) 2020 Rongmario
+ *  * 
+ *  * Permission is hereby granted, free of charge, to any person obtaining
+ *  * a copy of this software and associated documentation files (the
+ *  * "Software"), to deal in the Software without restriction, including
+ *  * without limitation the rights to use, copy, modify, merge, publish,
+ *  * distribute, sublicense, and/or sell copies of the Software, and to
+ *  * permit persons to whom the Software is furnished to do so, subject to
+ *  * the following conditions:
+ *  * 
+ *  * The above copyright notice and this permission notice shall be
+ *  * included in all copies or substantial portions of the Software.
+ *  * 
+ *  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+ *  * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+ *  * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+ *  * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE
+ *  * LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
+ *  * OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
+ *  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ */
+
 package zone.rong.dexterity.rpg.skill.common.mixin;
 
 import net.minecraft.block.Block;
@@ -14,25 +37,15 @@ import org.spongepowered.asm.mixin.injection.Redirect;
 import zone.rong.dexterity.rpg.skill.common.api.SkillHandler;
 import zone.rong.dexterity.rpg.skill.common.api.ServerWorldArtificialBlockStatesHandler;
 
-import static net.minecraft.block.Material.*;
-
-/**
- * Replace the checks with a Set#contains <- this should be modifiable by config of some sort.
- * - JSON -> a singular object that users can add RegistryKeys to (or Identifiers).
- *
- * We can also do these arbitrary checks to give a default amount of xp, should be on par with so and so blocks.
- */
 @Mixin(value = ServerPlayerInteractionManager.class, priority = 9999)
 public abstract class MixinServerPlayerInteractionManager {
 
     @Redirect(method = "tryBreakBlock", at = @At(value = "INVOKE", target = "Lnet/minecraft/block/Block;afterBreak(Lnet/minecraft/world/World;Lnet/minecraft/entity/player/PlayerEntity;Lnet/minecraft/util/math/BlockPos;Lnet/minecraft/block/BlockState;Lnet/minecraft/block/entity/BlockEntity;Lnet/minecraft/item/ItemStack;)V"))
     private void handleAfterBreaking(Block block, World world, PlayerEntity player, BlockPos pos, BlockState state, BlockEntity blockEntity, ItemStack stack) {
-        if (!((ServerWorldArtificialBlockStatesHandler) world).isArtificial(pos)) {
-            if (state.getMaterial() == STONE || state.getMaterial() == AGGREGATE || state.getMaterial() == METAL || state.getMaterial() == SOIL || state.getMaterial() == SOLID_ORGANIC || state.getMaterial() == ORGANIC_PRODUCT || state.getMaterial() == SNOW_LAYER || state.getMaterial() == SNOW_BLOCK || state.getMaterial() == DENSE_ICE || state.getMaterial() == REPAIR_STATION) {
-                ((SkillHandler) player).getSkillManager().addBreakXp(stack, state);
-            }
-        }
         block.afterBreak(world, player, pos, state, blockEntity, stack);
+        if (!((ServerWorldArtificialBlockStatesHandler) world).isArtificial(pos)) {
+            ((SkillHandler) player).getSkillManager().addBreakXp(stack, state);
+        }
     }
 
 }
