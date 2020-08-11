@@ -1,0 +1,13 @@
+{
+  "required": true,
+  "package": "xyz.rongmario.dexterity.rpg.skill.client.mixin",
+  "compatibilityLevel": "JAVA_8",
+  "client": [
+    "MixinHeldItemRenderer",
+    "MixinMinecraftClient"
+  ],
+  "mixins": [
+    "cultivation.MixinLivingEntityRenderer",
+    "magic.MixinInGameHud"
+  ]
+}

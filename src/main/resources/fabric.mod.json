@@ -1,0 +1,46 @@
+{
+  "schemaVersion": 1,
+  "id": "dexterity",
+  "version": "${version}",
+
+  "name": "Dexterity",
+  "description": "Dexterity.",
+  "authors": [
+    "Rongmario"
+  ],
+  "contact": {
+    "homepage": "https://www.curseforge.com/minecraft/mc-mods/dexterity",
+    "sources": "https://github.com/Rongmario/Dexterity",
+    "issues": "https://github.com/Rongmario/Dexterity/issues"
+  },
+
+  "license": "MIT",
+  "icon": "assets/dexterity/icon.png",
+
+  "environment": "*",
+  "entrypoints": {
+    "main": [
+      "xyz.rongmario.dexterity.DexterityMain"
+    ],
+    "client": [
+      "xyz.rongmario.dexterity.DexterityClient"
+    ],
+    "mm:early_risers": [
+      "xyz.rongmario.dexterity.DexterityASM"
+    ]
+  },
+  "mixins": [
+    "mixins.dexterity.base.json",
+    "mixins.dexterity.client.json",
+    "mixins.dexterity.common.json"
+  ],
+  "accessWidener" : "dexterity.accesswidener",
+  "depends": {
+    "fabricloader": ">=0.8.2",
+    "fabric": ">=0.12.0",
+    "minecraft": "1.16.x"
+  },
+  "suggests": {
+    "flamingo": "*"
+  }
+}

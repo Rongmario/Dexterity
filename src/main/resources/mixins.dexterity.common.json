@@ -1,0 +1,26 @@
+{
+  "required": true,
+  "package": "xyz.rongmario.dexterity.rpg.skill.common.mixin",
+  "compatibilityLevel": "JAVA_8",
+  "mixins": [
+    "MixinBlockItem",
+    "MixinItemStack",
+    "MixinPlayerEntity",
+    "MixinServerPlayerEntity",
+    "MixinServerPlayerInteractionManager",
+    "MixinServerWorld",
+    "MixinWorld",
+    "MixinWorldChunk",
+    "acrobatics.MixinClientPlayerInteractionManager",
+    "acrobatics.MixinServerPlayerEntity",
+    "acrobatics.MixinServerPlayerInteractionManager",
+    "alchemy.MixinBrewingStandBlock",
+    "alchemy.MixinBrewingStandBlockEntity",
+    "archery.MixinBowItem",
+    "combat.MixinLivingEntity",
+    "crafting.AccessorCraftingInventory",
+    "crafting.MixinCraftingResultSlot",
+    "cultivation.MixinAnimalEntity",
+    "cultivation.MixinEntityType"
+  ]
+}
