@@ -28,6 +28,7 @@ import net.fabricmc.fabric.api.event.player.AttackEntityCallback;
 import net.fabricmc.fabric.api.event.player.UseBlockCallback;
 import net.fabricmc.fabric.api.event.player.UseEntityCallback;
 import net.fabricmc.fabric.api.event.player.UseItemCallback;
+import net.minecraft.block.BlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
@@ -42,7 +43,7 @@ import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.world.World;
-import zone.rong.dexterity.api.event.BlockBreakEvent;
+import zone.rong.dexterity.api.event.ServerBlockBreakEvent;
 import zone.rong.dexterity.rpg.skill.perk.api.Perk;
 import zone.rong.dexterity.rpg.skill.types.Skill;
 import zone.rong.dexterity.rpg.skill.common.api.SkillHandler;
@@ -140,7 +141,7 @@ public class BasePerk implements Perk {
                 AttackEntityCallback.EVENT.register(this::setPerkActive);
                 break;
             case BREAK_BLOCK:
-                BlockBreakEvent.EVENT.register(this::setPerkActive);
+                ServerBlockBreakEvent.EVENT.register(this::setPerkActive);
                 break;
             default:
                 UseItemCallback.EVENT.register(this::setPerkActiveTyped);
@@ -155,7 +156,7 @@ public class BasePerk implements Perk {
         return ((SkillHandler) player).getPerkManager().setPerkActive(this);
     }
 
-    private ActionResult setPerkActive(PlayerEntity player, World world, Hand hand, BlockPos pos) {
+    private ActionResult setPerkActive(PlayerEntity player, World world, Hand hand, BlockPos pos, BlockState state) {
         if (world.isClient) {
             return ActionResult.PASS;
         }

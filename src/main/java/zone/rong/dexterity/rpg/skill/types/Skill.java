@@ -37,6 +37,7 @@ import zone.rong.dexterity.DexterityData;
 import zone.rong.dexterity.api.Unlockable;
 import zone.rong.dexterity.rpg.skill.perk.BasePerk;
 import zone.rong.dexterity.rpg.skill.perk.PerkBuilder;
+import zone.rong.dexterity.rpg.skill.trait.ModifyPlayerTrait;
 import zone.rong.dexterity.rpg.skill.trait.Trait;
 
 import java.util.Set;
@@ -83,8 +84,8 @@ public class Skill<S extends Skill<S>> implements Comparable<S>, Unlockable {
         return self();
     }
 
-    public S addTrait(int levelBarrier, Consumer<ServerPlayerEntity> serverPlayerConsumer) {
-        this.traitLookup.add(new Trait(this, levelBarrier, serverPlayerConsumer));
+    public S addTrait(String name, int levelToUnlock, Consumer<ServerPlayerEntity> playerConsumer) {
+        this.traitLookup.add(new ModifyPlayerTrait(name, this, levelToUnlock, playerConsumer));
         return self();
     }
 

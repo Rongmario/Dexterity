@@ -1,6 +1,6 @@
 /*
  *   Copyright (c) 2020 Rongmario
- *
+ *   
  *   Permission is hereby granted, free of charge, to any person obtaining
  *   a copy of this software and associated documentation files (the
  *   "Software"), to deal in the Software without restriction, including
@@ -8,10 +8,10 @@
  *   distribute, sublicense, and/or sell copies of the Software, and to
  *   permit persons to whom the Software is furnished to do so, subject to
  *   the following conditions:
- *
+ *   
  *   The above copyright notice and this permission notice shall be
  *   included in all copies or substantial portions of the Software.
- *
+ *   
  *   THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
  *   EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
  *   MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
@@ -21,31 +21,31 @@
  *   WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package zone.rong.dexterity.mixin;
+package zone.rong.dexterity.api.event;
 
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.network.ClientPlayerInteractionManager;
+import net.fabricmc.fabric.api.event.Event;
+import net.fabricmc.fabric.api.event.EventFactory;
+import net.minecraft.block.BlockState;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
-import org.spongepowered.asm.mixin.Final;
-import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Shadow;
-import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
-import zone.rong.dexterity.api.event.BlockBreakEvent;
+import net.minecraft.world.World;
 
-/**
- * This mixin fires BlockBreakEvent on the client-side
- */
-@Mixin(ClientPlayerInteractionManager.class)
-public class MixinClientPlayerInteractionManager {
+public interface ServerBlockBreakEvent {
 
-    @Shadow @Final private MinecraftClient client;
+    Event<ServerBlockBreakEvent> EVENT = EventFactory.createArrayBacked(ServerBlockBreakEvent.class,
+            listeners -> (player, world, hand, pos, state) -> {
+                for (ServerBlockBreakEvent event : listeners) {
+                    ActionResult result = event.interact(player, world, hand, pos, state);
+                    if (result != ActionResult.PASS) {
+                        return result;
+                    }
+                }
+                return ActionResult.PASS;
+            }
+    );
 
-    @Inject(method = "breakBlock", at = @At("TAIL"))
-    private void fireBlockBreakEvent(BlockPos pos, CallbackInfoReturnable<Boolean> cir) {
-        BlockBreakEvent.EVENT.invoker().interact(client.player, client.world, Hand.MAIN_HAND, pos);
-    }
+    ActionResult interact(PlayerEntity player, World world, Hand hand, BlockPos pos, BlockState state);
 
 }

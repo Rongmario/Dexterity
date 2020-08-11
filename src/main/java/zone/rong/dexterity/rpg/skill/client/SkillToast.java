@@ -58,7 +58,7 @@ public class SkillToast implements Toast {
         manager.getGame().getTextureManager().bindTexture(TOASTS_TEX);
         int colour = skill.getColour();
         RenderSystem.color3f((colour >> 16) / (float) 255, ((colour >> 8) & 255) / (float) 255, (colour & 255) / (float) 255);
-        manager.drawTexture(matrices, 0, 0, 0, 0, this.method_29049(), this.method_29050());
+        manager.drawTexture(matrices, 0, 0, 0, 0, this.getWidth(), this.getHeight());
         manager.getGame().textRenderer.draw(matrices, skill.getName(), 30.0F, 7.0F, colour);
         manager.getGame().textRenderer.draw(matrices, I18n.translate("toast.dexterity.level_up", this.levelPriorToCheck, "➮", this.totalLevel), 30.0F, 18.0F, Formatting.WHITE.getColorValue());
         RenderSystem.pushMatrix();

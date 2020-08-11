@@ -50,12 +50,12 @@ public class MixinInGameHud extends DrawableHelper {
 
     @Inject(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/network/ClientPlayerEntity;hasJumpingMount()Z", shift = At.Shift.BEFORE, by = 1), locals = LocalCapture.CAPTURE_FAILHARD)
     private void renderManaBar(MatrixStack stack, float f, CallbackInfo ci, TextRenderer textRenderer, int i) {
-        if (!this.chatHud.isChatFocused()) {
+        // if (!this.chatHud.isChatFocused()) { // isChatFocused is private now
             this.client.getTextureManager().bindTexture(DexterityData.MANA_BAR);
             int progress = (int) (this.client.player.getDataTracker().get(DexterityEntityTrackers.Player.MANA) * 100F);
             this.drawTexture(stack, i + 41 /* this is 50 */, this.scaledHeight - 45, 0, 0, 100, 5);
             this.drawTexture(stack, i + 41 /* this is 50 */, this.scaledHeight - 45, 0, 5, progress, 5);
-        }
+        // }
     }
 
 }

@@ -4,8 +4,7 @@
   "compatibilityLevel": "JAVA_8",
   "mixins": [
     "AccessorLootTable",
-    "MixinClientPlayerInteractionManager",
     "MixinServerPlayerInteractionManager",
-    "tag.MixinRegistryTagManager"
+    "tag.MixinServerResourceManager"
   ]
 }

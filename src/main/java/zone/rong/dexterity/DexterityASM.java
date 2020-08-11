@@ -24,20 +24,31 @@
 package zone.rong.dexterity;
 
 import com.chocohead.mm.api.ClassTinkerers;
+import com.google.common.collect.Streams;
 import net.fabricmc.loader.api.FabricLoader;
 import net.fabricmc.loader.api.MappingResolver;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.hud.InGameHud;
-import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.block.BlockState;
+import net.minecraft.entity.Entity;
+import net.minecraft.item.ItemStack;
+import net.minecraft.loot.context.LootContext;
+import net.minecraft.server.network.ServerPlayerEntity;
 import org.objectweb.asm.Opcodes;
+import org.objectweb.asm.Type;
 import org.objectweb.asm.tree.AbstractInsnNode;
 import org.objectweb.asm.tree.ClassNode;
-import org.objectweb.asm.tree.FieldInsnNode;
-import org.objectweb.asm.tree.FieldNode;
 import org.objectweb.asm.tree.MethodInsnNode;
 import org.objectweb.asm.tree.MethodNode;
 import org.objectweb.asm.tree.VarInsnNode;
+import zone.rong.dexterity.api.DexteritySkills;
+import zone.rong.dexterity.rpg.skill.common.api.SkillHandler;
 
+import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
+/**
+ * 1. Handles Super Breaker double drops - {@link DexterityASM#modifyDrops(BlockState, LootContext.Builder, Entity)}
+ */
 public class DexterityASM implements Runnable {
 
     public static final String INTERMEDIARY = "intermediary";
@@ -45,36 +56,34 @@ public class DexterityASM implements Runnable {
 
     @Override
     public void run() {
-        // ClassTinkerers.addTransformation(REMAPPER.mapClassName(INTERMEDIARY, "net.minecraft.client.gui.hud.InGameHud"), this::transformInGameHud);
-        // ClassTinkerers.addTransformation(REMAPPER.mapClassName(INTERMEDIARY, "net.minecraft.entity.passive.AnimalEntity"), this::insertStaticFieldsToAnimalEntity);
+        ClassTinkerers.addTransformation(REMAPPER.mapClassName(INTERMEDIARY, "net.minecraft.block.Block"), this::transformBlock);
     }
 
-    /*
-    private void transformRecipeUnlocker(ClassNode clazz) {
-        String shouldCraftRecipe = REMAPPER.mapMethodName(INTERMEDIARY, "net.minecraft.recipe.RecipeUnlocker", "shouldCraftRecipe", "(Lnet/minecraft/world/World;Lnet/minecraft/server/network/ServerPlayerEntity;Lnet/minecraft/recipe/Recipe;)Z");
-        for (MethodNode method : clazz.methods) {
-            if (method.name.equals(shouldCraftRecipe)) {
-                System.out.println("Found ya!");
-                int count = 0;
-                for (AbstractInsnNode instruction : method.instructions) {
-                    if (instruction.getOpcode() == Opcodes.INVOKEINTERFACE) {
-                        ++count;
-                        if (count == 2) {
-                            MethodInsnNode call = new MethodInsnNode(Opcodes.INVOKESTATIC, "xyz/rongmario/dexterity/DexterityASM", "test", "(Lnet/minecraft/recipe/Recipe;Lnet/minecraft/entity/player/PlayerEntity;)V", false);
-                            method.instructions.insertBefore(instruction, new VarInsnNode(Opcodes.ALOAD, 3));
-                            method.instructions.insertBefore(instruction, new VarInsnNode(Opcodes.ALOAD, 2));
-                            method.instructions.insertBefore(instruction, call);
-                        }
-                    }
-                }
+    private void transformBlock(ClassNode classNode) {
+        final String getDroppedStacks = REMAPPER.mapMethodName(INTERMEDIARY, "net.minecraft.block.Block", "getDroppedStacks", "(Lnet/minecraft/block/BlockState;Lnet/minecraft/server/world/ServerWorld;Lnet/minecraft/util/math/BlockPos;Lnet/minecraft/block/entity/BlockEntity;Lnet/minecraft/entity/Entity;Lnet/minecraft/item/ItemStack;)Ljava/util/List;");
+        classNode.methods.stream()
+                .filter(m -> m.name.equals(getDroppedStacks))
+                .skip(1)
+                .findFirst()
+                .ifPresent(m -> Streams.stream(m.instructions)
+                        .filter(i -> i.getOpcode() == Opcodes.ARETURN)
+                        .findFirst()
+                        .ifPresent(i -> {
+                            m.instructions.remove(i.getPrevious());
+                            m.instructions.insertBefore(i, new VarInsnNode(Opcodes.ALOAD, 4));
+                            m.instructions.insertBefore(i, new MethodInsnNode(Opcodes.INVOKESTATIC, Type.getInternalName(this.getClass()), "modifyDrops", "(Lnet/minecraft/block/BlockState;Lnet/minecraft/loot/context/LootContext$Builder;Lnet/minecraft/entity/Entity;)Ljava/util/List;"));
+                        }));
+    }
+
+    // TODO modify triple drop chance, and double will happen as a trait
+    public static List<ItemStack> modifyDrops(BlockState state, LootContext.Builder builder, Entity entity) {
+        List<ItemStack> builtStacks = state.getDroppedStacks(builder);
+        if (entity instanceof ServerPlayerEntity) {
+            if (((SkillHandler) entity).getPerkManager().isPerkActive(DexteritySkills.SUPER_BREAK) && ((ServerPlayerEntity) entity).getRandom().nextFloat() >= 0.5F) {
+                return builtStacks.stream().flatMap(stack -> Stream.generate(() -> stack).limit(3)).collect(Collectors.toList());
             }
         }
+        return builtStacks;
     }
-
-    public static void test(Recipe<?> recipe, PlayerEntity player) {
-        DexterityMain.LOGGER.info("Recipe: {}", recipe.getOutput());
-        DexterityMain.LOGGER.info("Transformed! Here is the Player's Name: {}", player.getUuid());
-    }
-     */
 
 }

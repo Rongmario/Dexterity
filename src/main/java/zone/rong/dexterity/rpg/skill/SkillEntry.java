@@ -36,6 +36,7 @@ import net.minecraft.text.HoverEvent;
 import net.minecraft.text.TranslatableText;
 import zone.rong.dexterity.DexterityData;
 import zone.rong.dexterity.api.DexterityPackets;
+import zone.rong.dexterity.rpg.skill.trait.ModifyPlayerTrait;
 import zone.rong.dexterity.rpg.skill.types.Skill;
 
 public class SkillEntry {
@@ -74,11 +75,14 @@ public class SkillEntry {
                 player.server.getPlayerManager().broadcastChatMessage(
                         new TranslatableText("message.dexterity.congratulations",
                                 player.getName(), skill.getName(), totalLevel)
-                                .styled(style -> style.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, skill.getDescription()))), MessageType.CHAT, player.getUuid());
+                                .styled(style -> style.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, skill.getDescription()))), MessageType.CHAT, player.getUuid());
             }
-            skill.getTraitLookup().stream().filter(t -> t.getLevelBarrier() <= this.totalLevel).forEach(t -> t.applyModification(player));
+            skill.getTraitLookup().stream()
+                    .filter(t -> t instanceof ModifyPlayerTrait)
+                    .filter(t -> t.getLevelToUnlock() <= this.totalLevel)
+                    .forEach(t -> ((ModifyPlayerTrait) t).applyModification(player));
             check(true);
-        } else if (recursive && this.totalLevelPriorCheck < this.totalLevel) {
+        } else if (recursive && this.totalLevelPriorCheck != 0 && this.totalLevelPriorCheck < this.totalLevel) {
             PacketByteBuf packet = new PacketByteBuf(Unpooled.buffer());
             packet.writeInt(DexterityData.SKILLS.getRawId(skill));
             packet.writeInt(this.totalLevelPriorCheck);

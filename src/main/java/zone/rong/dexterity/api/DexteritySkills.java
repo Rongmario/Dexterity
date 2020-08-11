@@ -107,15 +107,15 @@ public class DexteritySkills {
         initMining();
         initSwordsmanship();
         initUnarmed();
-        prepareAdditionalDropConditions();
+        // prepareAdditionalDropConditions();
     }
 
     public static void initAcrobatics() {
         ACROBATICS
-                .addTrait(250, player -> player.getDataTracker().set(DexterityEntityTrackers.Player.REAL_BLOCK_REACH, 6.0F))
-                .addTrait(750, player -> player.getDataTracker().set(DexterityEntityTrackers.Player.REAL_BLOCK_REACH, 7.0F))
-                .addTrait(500, player -> player.getDataTracker().set(DexterityEntityTrackers.Player.REAL_ENTITY_REACH, 6.0F))
-                .addTrait(1000, player -> player.getDataTracker().set(DexterityEntityTrackers.Player.REAL_ENTITY_REACH, 7.0F));
+                .addTrait("extended_block_reach_0", 250, player -> player.getDataTracker().set(DexterityEntityTrackers.Player.REAL_BLOCK_REACH, 6.0F))
+                .addTrait("extended_block_reach_1", 750, player -> player.getDataTracker().set(DexterityEntityTrackers.Player.REAL_BLOCK_REACH, 7.0F))
+                .addTrait("extended_entity_reach_0", 500, player -> player.getDataTracker().set(DexterityEntityTrackers.Player.REAL_ENTITY_REACH, 6.0F))
+                .addTrait("extended_entity_reach_1", 1000, player -> player.getDataTracker().set(DexterityEntityTrackers.Player.REAL_ENTITY_REACH, 7.0F));
     }
 
     private static void initArchery() {
@@ -163,6 +163,7 @@ public class DexteritySkills {
                 .addTool(ItemStack.EMPTY);
     }
 
+    /*
     private static void prepareAdditionalDropConditions() {
         LootTableLoadingCallback.EVENT.register(((resourceManager, manager, id, supplier, setter) -> {
             if (id.getPath().startsWith("blocks/")) {
@@ -189,5 +190,6 @@ public class DexteritySkills {
             }
         }));
     }
+     */
 
 }

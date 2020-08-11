@@ -23,6 +23,7 @@
 
 package zone.rong.dexterity.mixin;
 
+import net.minecraft.block.BlockState;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.network.ServerPlayerInteractionManager;
 import net.minecraft.server.world.ServerWorld;
@@ -35,7 +36,8 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
-import zone.rong.dexterity.api.event.BlockBreakEvent;
+import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
+import zone.rong.dexterity.api.event.ServerBlockBreakEvent;
 
 /**
  * This mixin fires BlockBreakEvent on the server-side
@@ -46,9 +48,9 @@ public class MixinServerPlayerInteractionManager {
     @Shadow public ServerPlayerEntity player;
     @Shadow public ServerWorld world;
 
-    @Inject(method = "tryBreakBlock", at = @At("TAIL"))
-    private void fireBlockBreakEvent(BlockPos pos, CallbackInfoReturnable<Boolean> cir) {
-        BlockBreakEvent.EVENT.invoker().interact(player, world, Hand.MAIN_HAND, pos);
+    @Inject(method = "tryBreakBlock", at = @At("TAIL"), locals = LocalCapture.CAPTURE_FAILHARD)
+    private void fireBlockBreakEvent(BlockPos pos, CallbackInfoReturnable<Boolean> cir, BlockState state) {
+        ServerBlockBreakEvent.EVENT.invoker().interact(player, world, Hand.MAIN_HAND, pos, state);
     }
 
     // Proper redirect under this to send back an "everything's alright!" packet to client, also quieting this bitch up for the time being

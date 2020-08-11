@@ -21,6 +21,7 @@
     "crafting.AccessorCraftingInventory",
     "crafting.MixinCraftingResultSlot",
     "cultivation.MixinAnimalEntity",
-    "cultivation.MixinEntityType"
+    "cultivation.MixinEntityType",
+    "dig.MixinBlock"
   ]
 }

@@ -27,6 +27,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Vec3d;
 import zone.rong.dexterity.rpg.skill.perk.BasePerk;
 import zone.rong.dexterity.rpg.skill.common.api.ServerWorldArtificialBlockStatesHandler;
 import zone.rong.dexterity.rpg.skill.common.api.SkillHandler;
@@ -41,11 +42,11 @@ public class DexterityPredicate {
         this.hasToBeNatural = hasToBeNatural;
     }
 
-    public boolean test(Entity entity, ItemStack stack, BlockPos pos) {
+    public boolean test(Entity entity, ItemStack stack) {
         boolean toReturn = false;
         if (entity instanceof ServerPlayerEntity) {
             if (hasToBeNatural) {
-                toReturn = !((ServerWorldArtificialBlockStatesHandler) entity.world).isArtificial(pos);
+                // toReturn = !((ServerWorldArtificialBlockStatesHandler) entity.world).isArtificial(pos);
             }
             if (perk != null) {
                 SkillHandler player = (SkillHandler) entity;

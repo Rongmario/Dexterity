@@ -21,30 +21,27 @@
  *   WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package zone.rong.dexterity.api.event;
+package zone.rong.dexterity.mixin.tag;
 
-import net.fabricmc.fabric.api.event.Event;
-import net.fabricmc.fabric.api.event.EventFactory;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.util.ActionResult;
-import net.minecraft.util.Hand;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
+import net.minecraft.resource.ServerResourceManager;
+import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+import zone.rong.dexterity.DexterityData;
+import zone.rong.dexterity.api.DexterityTagDelegationManager;
+import zone.rong.dexterity.rpg.skill.types.AbstractToolSkill;
 
-public interface BlockBreakEvent {
+@Mixin(ServerResourceManager.class)
+public class MixinServerResourceManager {
 
-    Event<BlockBreakEvent> EVENT = EventFactory.createArrayBacked(BlockBreakEvent.class,
-            listeners -> (player, world, hand, pos) -> {
-                for (BlockBreakEvent event : listeners) {
-                    ActionResult result = event.interact(player, world, hand, pos);
-                    if (result != ActionResult.PASS) {
-                        return result;
-                    }
-                }
-                return ActionResult.PASS;
-            }
-    );
-
-    ActionResult interact(PlayerEntity player, World world, Hand hand, BlockPos pos);
+    @Inject(method = "loadRegistryTags", at = @At("TAIL"))
+    private void applyDelegateManager(CallbackInfo ci) {
+        DexterityData.SKILLS.stream()
+                .filter(s -> s instanceof AbstractToolSkill)
+                .map(s -> ((AbstractToolSkill<?, ?>) s))
+                .map(AbstractToolSkill::getManager)
+                .forEach(DexterityTagDelegationManager::callback);
+    }
 
 }

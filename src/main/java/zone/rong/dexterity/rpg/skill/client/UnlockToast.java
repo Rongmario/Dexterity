@@ -51,7 +51,7 @@ public class UnlockToast implements Toast {
         manager.getGame().getTextureManager().bindTexture(TOASTS_TEX);
         int colour = unlockable.getColour();
         RenderSystem.color3f((colour >> 16) / (float) 255, ((colour >> 8) & 255) / (float) 255, (colour & 255) / (float) 255);
-        manager.drawTexture(matrices, 0, 0, 0, 0, this.method_29049(), this.method_29050());
+        manager.drawTexture(matrices, 0, 0, 0, 0, this.getWidth(), this.getHeight());
         manager.getGame().textRenderer.draw(matrices, I18n.translate("toast.dexterity.unlock", unlockable.getName()), 30.0F, 12.0F, Formatting.WHITE.getColorValue());
         RenderSystem.pushMatrix();
         manager.getGame().getItemRenderer().renderInGui(unlockable.getDisplayItem(), 8, 8);

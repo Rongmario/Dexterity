@@ -52,7 +52,7 @@ public class DexterityLootCondition implements LootCondition {
 
     @Override
     public boolean test(LootContext lootContext) {
-        return predicate.test(lootContext.get(LootContextParameters.THIS_ENTITY), lootContext.get(LootContextParameters.TOOL), lootContext.get(LootContextParameters.POSITION));
+        return predicate.test(lootContext.get(LootContextParameters.THIS_ENTITY), lootContext.get(LootContextParameters.TOOL));
     }
 
 }

@@ -61,7 +61,7 @@ public class MixinServerWorld implements ServerWorldArtificialBlockStatesHandler
     @Unique private LongSet ARTIFICIAL_STATES;
 
     @Inject(method = "<init>", at = @At("RETURN"))
-    private void injectAtCtor(MinecraftServer server, Executor workerExecutor, LevelStorage.Session session, ServerWorldProperties properties, RegistryKey<World> registryKey, RegistryKey<DimensionType> registryKey2, DimensionType dimensionType, WorldGenerationProgressListener generationProgressListener, ChunkGenerator chunkGenerator, boolean bl, long l, List<Spawner> list, boolean bl2, CallbackInfo ci) {
+    private void injectAtCtor(MinecraftServer server, Executor workerExecutor, LevelStorage.Session session, ServerWorldProperties properties, RegistryKey<World> registryKey, DimensionType dimensionType, WorldGenerationProgressListener worldGenerationProgressListener, ChunkGenerator chunkGenerator, boolean bl, long l, List<Spawner> list, boolean bl2, CallbackInfo ci) {
         File dexteritySave = ((ServerWorld) (Object) this).getPersistentStateManager().getFile("dexterity");
         try (ObjectInputStream input = new ObjectInputStream(new GZIPInputStream(new FileInputStream(dexteritySave)))) {
             this.ARTIFICIAL_STATES = (LongSet) input.readObject();

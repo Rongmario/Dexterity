@@ -1,6 +1,6 @@
 /*
  *   Copyright (c) 2020 Rongmario
- *   
+ *
  *   Permission is hereby granted, free of charge, to any person obtaining
  *   a copy of this software and associated documentation files (the
  *   "Software"), to deal in the Software without restriction, including
@@ -8,10 +8,10 @@
  *   distribute, sublicense, and/or sell copies of the Software, and to
  *   permit persons to whom the Software is furnished to do so, subject to
  *   the following conditions:
- *   
+ *
  *   The above copyright notice and this permission notice shall be
  *   included in all copies or substantial portions of the Software.
- *   
+ *
  *   THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
  *   EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
  *   MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
@@ -21,27 +21,34 @@
  *   WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package zone.rong.dexterity.mixin.tag;
+package zone.rong.dexterity.rpg.skill.common.mixin.dig;
 
-import net.minecraft.tag.RegistryTagManager;
+import net.minecraft.block.Block;
+import net.minecraft.block.BlockState;
+import net.minecraft.block.entity.BlockEntity;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.ItemStack;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.World;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-import zone.rong.dexterity.DexterityData;
-import zone.rong.dexterity.api.DexterityTagDelegationManager;
-import zone.rong.dexterity.rpg.skill.types.AbstractToolSkill;
+import zone.rong.dexterity.api.DexteritySkills;
+import zone.rong.dexterity.rpg.skill.common.api.ServerWorldArtificialBlockStatesHandler;
+import zone.rong.dexterity.rpg.skill.common.api.SkillHandler;
 
-@Mixin(RegistryTagManager.class)
-public class MixinRegistryTagManager {
+@Mixin(Block.class)
+public class MixinBlock {
 
-    @Inject(method = "apply", at = @At("TAIL"))
-    private void applyDelegateManager(CallbackInfo ci) {
-        DexterityData.SKILLS.stream()
-                .filter(s -> s instanceof AbstractToolSkill)
-                .map(s -> ((AbstractToolSkill<?, ?>) s))
-                .map(AbstractToolSkill::getManager)
-                .forEach(DexterityTagDelegationManager::callback);
+    /*
+    @Inject(method = "afterBreak", at = @At("TAIL"))
+    private void checkToReRoll(World world, PlayerEntity player, BlockPos pos, BlockState state, BlockEntity blockEntity, ItemStack stack, CallbackInfo ci) {
+        if (((SkillHandler) player).getPerkManager().isPerkActive(DexteritySkills.SUPER_BREAK) && ((ServerWorldArtificialBlockStatesHandler) world).isArtificial(pos) && world.random.nextFloat() >= 0.5F) {
+            Block.dropStacks(state, world, pos, blockEntity, player, stack);
+        }
     }
+
+     */
 
 }
