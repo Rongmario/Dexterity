@@ -50,7 +50,9 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 /**
- * 1. Handles Super Breaker double drops - {@link DexterityASM#modifyDrops(BlockState, LootContext.Builder, ServerWorld, BlockPos, Entity)}
+ * 1a. Handles Mining trait - Double Drops
+ * 1b. Handles Mining Perk - Super Breaker: Triple Drops
+ * {@link DexterityASM#modifyDrops(BlockState, LootContext.Builder, ServerWorld, BlockPos, Entity)}
  */
 public class DexterityASM implements Runnable {
 
