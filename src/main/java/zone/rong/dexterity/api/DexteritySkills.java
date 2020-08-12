@@ -102,7 +102,7 @@ public class DexteritySkills {
 
     public static void initAcrobatics() {
         ACROBATICS
-                // .addTrait("graceful_landing", 0);
+                .addTrait("graceful_landing", 0)
                 .addTrait("extended_block_reach_0", 500, player -> player.getDataTracker().set(DexterityEntityTrackers.Player.REAL_BLOCK_REACH, 6.0F))
                 .addTrait("extended_block_reach_1", 1000, player -> player.getDataTracker().set(DexterityEntityTrackers.Player.REAL_BLOCK_REACH, 7.0F))
                 .addTrait("extended_entity_reach_0", 500, player -> player.getDataTracker().set(DexterityEntityTrackers.Player.REAL_ENTITY_REACH, 6.0F))
@@ -137,6 +137,7 @@ public class DexteritySkills {
 
     private static void initMining() {
         MINING
+                .addTrait("double_drops", 0)
                 .addPerk(SUPER_BREAK)
                 .addTool(FabricToolTags.PICKAXES)
                 .addMaterials(DENSE_ICE, METAL, REDSTONE_LAMP, SHULKER_BOX, STONE, REPAIR_STATION)

@@ -23,61 +23,22 @@
 
 package zone.rong.dexterity.rpg.skill.trait;
 
-import net.minecraft.item.ItemStack;
 import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.text.MutableText;
-import net.minecraft.text.TranslatableText;
 import zone.rong.dexterity.rpg.skill.types.Skill;
 
 import java.util.function.Consumer;
 
-public class ModifyPlayerTrait implements Trait {
+public class ModifyPlayerTrait extends BaseTrait {
 
-    protected final String name;
-    protected final MutableText displayName;
-    protected final Skill<?> parentSkill;
-    protected final int levelToUnlock;
     protected final Consumer<ServerPlayerEntity> modify;
 
     public ModifyPlayerTrait(String name, Skill<?> parentSkill, int levelToUnlock, Consumer<ServerPlayerEntity> modify) {
-        this.name = name;
-        this.displayName = new TranslatableText("trait.dexterity.".concat(name));
-        this.parentSkill = parentSkill;
-        this.levelToUnlock = levelToUnlock;
+        super(name, parentSkill, levelToUnlock);
         this.modify = modify;
-    }
-
-    public Skill<?> getParentSkill() {
-        return parentSkill;
     }
 
     public void applyModification(ServerPlayerEntity player) {
         modify.accept(player);
-    }
-
-    @Override
-    public String toString() {
-        return name;
-    }
-
-    @Override
-    public int getLevelToUnlock() {
-        return levelToUnlock;
-    }
-
-    @Override
-    public MutableText getName() {
-        return displayName;
-    }
-
-    @Override
-    public int getColour() {
-        return parentSkill.getColour();
-    }
-
-    @Override
-    public ItemStack getDisplayItem() {
-        return parentSkill.getDisplayItem();
     }
 
 }

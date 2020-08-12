@@ -34,6 +34,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import zone.rong.dexterity.api.DexterityEntityTrackers;
 
+// TODO shadow
 @Mixin(LivingEntityRenderer.class)
 public class MixinLivingEntityRenderer {
 
