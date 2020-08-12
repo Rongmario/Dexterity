@@ -53,7 +53,7 @@ public abstract class MixinPlayerEntity extends LivingEntity {
     private void addDataTrackers(CallbackInfo ci) {
         this.dataTracker.startTracking(DexterityEntityTrackers.Player.REAL_BLOCK_REACH, 4.5F);
         this.dataTracker.startTracking(DexterityEntityTrackers.Player.REAL_ENTITY_REACH, 4.5F);
-        this.dataTracker.startTracking(DexterityEntityTrackers.Player.MANA, 0.0F); // TODO - determine if this value should exist on both client/server
+        this.dataTracker.startTracking(DexterityEntityTrackers.Player.MANA, 0.0F);
     }
 
     @Inject(method = "getBlockBreakingSpeed", at = @At("TAIL"), cancellable = true)

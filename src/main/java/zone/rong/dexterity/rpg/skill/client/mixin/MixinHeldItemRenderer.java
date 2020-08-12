@@ -23,9 +23,19 @@
 
 package zone.rong.dexterity.rpg.skill.client.mixin;
 
+import net.minecraft.client.network.AbstractClientPlayerEntity;
+import net.minecraft.client.render.VertexConsumerProvider;
+import net.minecraft.client.render.entity.PlayerEntityRenderer;
 import net.minecraft.client.render.item.HeldItemRenderer;
+import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.item.ItemStack;
+import net.minecraft.util.Hand;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
+import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.Redirect;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import zone.rong.dexterity.rpg.skill.client.api.HeldItemHandler;
 
 /**
@@ -35,6 +45,14 @@ import zone.rong.dexterity.rpg.skill.client.api.HeldItemHandler;
 public class MixinHeldItemRenderer implements HeldItemHandler {
 
     @Unique private boolean dexterity$ready;
+
+    // TODO general idea is there, experiment with values
+    @Inject(method = "renderFirstPersonItem", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/util/math/MatrixStack;push()V", ordinal = 0, shift = At.Shift.AFTER, by = 1), cancellable = true)
+    private void topkek(AbstractClientPlayerEntity player, float tickDelta, float pitch, Hand hand, float swingProgress, ItemStack stack, float equipProgress, MatrixStack matrixStack, VertexConsumerProvider vertexConsumers, int light, CallbackInfo ci) {
+        if (dexterity$ready) {
+            matrixStack.translate(stack.isEmpty() ? 0.25D : -0.1D, 0.25D, 0.05D);
+        }
+    }
 
     @Override
     public void ready(boolean ready) {

@@ -42,6 +42,7 @@ import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import zone.rong.dexterity.DexterityData;
+import zone.rong.dexterity.api.DexterityNBT;
 import zone.rong.dexterity.api.DexteritySkills;
 import zone.rong.dexterity.rpg.skill.common.api.XPStore;
 import zone.rong.dexterity.rpg.skill.common.api.alchemy.BrewingStandBlockEntityHandler;
@@ -78,12 +79,12 @@ public abstract class MixinBrewingStandBlockEntity extends LockableContainerBloc
 
     @Inject(method = "fromTag", at = @At("TAIL"))
     private void getUuidFromTag(BlockState state, CompoundTag tag, CallbackInfo ci) {
-        fromTag(tag, DexterityData.BREWING_STAND_XP_STORE_KEY);
+        fromTag(tag, DexterityNBT.XPStore.BREWING_STAND_XP_STORE_KEY);
     }
 
     @Inject(method = "toTag", at = @At("TAIL"))
     private void addUuidToTag(CompoundTag tag, CallbackInfoReturnable<CompoundTag> cir) {
-        toTag(tag, DexterityData.BREWING_STAND_XP_STORE_KEY);
+        toTag(tag, DexterityNBT.XPStore.BREWING_STAND_XP_STORE_KEY);
     }
 
     @Override

@@ -32,6 +32,8 @@ import net.minecraft.entity.Entity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.loot.context.LootContext;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.server.world.ServerWorld;
+import net.minecraft.util.math.BlockPos;
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.Type;
 import org.objectweb.asm.tree.AbstractInsnNode;
@@ -40,6 +42,7 @@ import org.objectweb.asm.tree.MethodInsnNode;
 import org.objectweb.asm.tree.MethodNode;
 import org.objectweb.asm.tree.VarInsnNode;
 import zone.rong.dexterity.api.DexteritySkills;
+import zone.rong.dexterity.rpg.skill.common.api.ServerWorldArtificialBlockStatesHandler;
 import zone.rong.dexterity.rpg.skill.common.api.SkillHandler;
 
 import java.util.List;
@@ -47,7 +50,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 /**
- * 1. Handles Super Breaker double drops - {@link DexterityASM#modifyDrops(BlockState, LootContext.Builder, Entity)}
+ * 1. Handles Super Breaker double drops - {@link DexterityASM#modifyDrops(BlockState, LootContext.Builder, ServerWorld, BlockPos, Entity)}
  */
 public class DexterityASM implements Runnable {
 
@@ -69,20 +72,21 @@ public class DexterityASM implements Runnable {
                         .filter(i -> i.getOpcode() == Opcodes.ARETURN)
                         .findFirst()
                         .ifPresent(i -> {
-                            m.instructions.remove(i.getPrevious());
-                            m.instructions.insertBefore(i, new VarInsnNode(Opcodes.ALOAD, 4));
-                            m.instructions.insertBefore(i, new MethodInsnNode(Opcodes.INVOKESTATIC, Type.getInternalName(this.getClass()), "modifyDrops", "(Lnet/minecraft/block/BlockState;Lnet/minecraft/loot/context/LootContext$Builder;Lnet/minecraft/entity/Entity;)Ljava/util/List;"));
+                            m.instructions.remove(i.getPrevious()); // INVOKEVIRTUAL BlockState#getDroppedStacks
+                            // ALOAD 0 - Load BlockState reference
+                            // ALOAD 6 - Load LootContext.Builder reference
+                            m.instructions.insertBefore(i, new VarInsnNode(Opcodes.ALOAD, 1)); // Load ServerWorld reference
+                            m.instructions.insertBefore(i, new VarInsnNode(Opcodes.ALOAD, 2)); // Load BlockPos reference
+                            m.instructions.insertBefore(i, new VarInsnNode(Opcodes.ALOAD, 4)); // Load Entity reference
+                            m.instructions.insertBefore(i, new MethodInsnNode(Opcodes.INVOKESTATIC, Type.getInternalName(this.getClass()), "modifyDrops", "(Lnet/minecraft/block/BlockState;Lnet/minecraft/loot/context/LootContext$Builder;Lnet/minecraft/server/world/ServerWorld;Lnet/minecraft/util/math/BlockPos;Lnet/minecraft/entity/Entity;)Ljava/util/List;"));
                         }));
     }
 
     // TODO modify triple drop chance, and double will happen as a trait
-    public static List<ItemStack> modifyDrops(BlockState state, LootContext.Builder builder, Entity entity) {
+    public static List<ItemStack> modifyDrops(BlockState state, LootContext.Builder builder, ServerWorld world, BlockPos pos, Entity entity) {
         List<ItemStack> builtStacks = state.getDroppedStacks(builder);
-        if (entity instanceof ServerPlayerEntity) {
-            if (((SkillHandler) entity).getPerkManager().isPerkActive(DexteritySkills.SUPER_BREAK) && ((ServerPlayerEntity) entity).getRandom().nextFloat() >= 0.5F) {
-                // Perhaps use a min capacity list construction here, less allocations.
-                return builtStacks.stream().flatMap(stack -> Stream.generate(() -> stack).limit(3)).collect(Collectors.toList());
-            }
+        if (entity instanceof ServerPlayerEntity && !((ServerWorldArtificialBlockStatesHandler) world).isArtificial(pos) && ((SkillHandler) entity).getPerkManager().isPerkActive(DexteritySkills.SUPER_BREAK) && ((ServerPlayerEntity) entity).getRandom().nextFloat() >= 0.5F) {
+            return builtStacks.stream().flatMap(stack -> Stream.generate(() -> stack).limit(3)).collect(Collectors.toList());
         }
         return builtStacks;
     }

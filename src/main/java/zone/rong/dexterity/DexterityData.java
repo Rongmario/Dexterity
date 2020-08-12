@@ -36,7 +36,6 @@ import java.util.UUID;
 
 public class DexterityData {
 
-    public static final String BREWING_STAND_XP_STORE_KEY = "DexterityBrewingStandXPStore";
     public static final String PLAYER_UUID_KEY = "DexterityUUID";
     public static final String PLAYER_UUID_XP_KEY = "DexterityUUIDXPStore";
 

@@ -38,9 +38,8 @@ public class MixinServerPlayerInteractionManager {
 
     @ModifyConstant(method = "processBlockBreakingAction", constant = @Constant(doubleValue = 36.0D))
     private double modifyConstantToCheckBlockDistance(double original) {
-        // double modified = this.player.getDataTracker().get(DexterityEntityTrackers.Player.REAL_REACH);
-        // return modified * modified;
-        return this.player.getDataTracker().get(DexterityEntityTrackers.Player.REAL_BLOCK_REACH) * 9;
+        double modified = this.player.getDataTracker().get(DexterityEntityTrackers.Player.REAL_BLOCK_REACH);
+        return modified * modified;
     }
 
 }

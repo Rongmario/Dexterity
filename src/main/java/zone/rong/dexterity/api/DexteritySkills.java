@@ -23,27 +23,17 @@
 
 package zone.rong.dexterity.api;
 
-import net.fabricmc.fabric.api.loot.v1.FabricLootPoolBuilder;
-import net.fabricmc.fabric.api.loot.v1.event.LootTableLoadingCallback;
 import net.fabricmc.fabric.api.tool.attribute.v1.FabricToolTags;
-import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
-import net.minecraft.block.Material;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.attribute.EntityAttributeModifier;
 import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.item.RangedWeaponItem;
-import net.minecraft.loot.ConstantLootTableRange;
-import net.minecraft.loot.LootPool;
 import net.minecraft.tag.BlockTags;
 import net.minecraft.util.ActionResult;
-import net.minecraft.util.Identifier;
-import net.minecraft.util.registry.Registry;
-import zone.rong.dexterity.DexterityData;
 import zone.rong.dexterity.DexterityHelper;
-import zone.rong.dexterity.mixin.AccessorLootTable;
 import zone.rong.dexterity.rpg.skill.perk.EmptyHandPerk;
 import zone.rong.dexterity.rpg.skill.perk.GenericPerk;
 import zone.rong.dexterity.rpg.skill.perk.PerkBuilder;
@@ -90,10 +80,10 @@ public class DexteritySkills {
             .readyCondition((player, stack) -> stack.isEmpty())
             .start((player, world, stack) -> {
                 // Fixme TEMP VALUE
-                player.getAttributeInstance(EntityAttributes.GENERIC_ATTACK_DAMAGE).addTemporaryModifier(new EntityAttributeModifier(DexterityData.DAMAGE_AMOUNT_PERK_UUID, "Bonus Dexterity Damage", 5.0D, EntityAttributeModifier.Operation.ADDITION));
+                player.getAttributeInstance(EntityAttributes.GENERIC_ATTACK_DAMAGE).addTemporaryModifier(new EntityAttributeModifier(DexterityEntityAttributes.DAMAGE_AMOUNT_PERK_UUID, "Bonus Dexterity Damage", 5.0D, EntityAttributeModifier.Operation.ADDITION));
                 return ActionResult.PASS;
             })
-            .end((player, world, stack) -> player.getAttributeInstance(EntityAttributes.GENERIC_ATTACK_DAMAGE).removeModifier(DexterityData.DAMAGE_AMOUNT_PERK_UUID))
+            .end((player, world, stack) -> player.getAttributeInstance(EntityAttributes.GENERIC_ATTACK_DAMAGE).removeModifier(DexterityEntityAttributes.DAMAGE_AMOUNT_PERK_UUID))
             .useHand()
             .perkTrigger(InteractionTrigger.ATTACK_ENTITY)
             .build("berserk", UNARMED, s -> 200, s -> 100);
@@ -112,8 +102,9 @@ public class DexteritySkills {
 
     public static void initAcrobatics() {
         ACROBATICS
-                .addTrait("extended_block_reach_0", 250, player -> player.getDataTracker().set(DexterityEntityTrackers.Player.REAL_BLOCK_REACH, 6.0F))
-                .addTrait("extended_block_reach_1", 750, player -> player.getDataTracker().set(DexterityEntityTrackers.Player.REAL_BLOCK_REACH, 7.0F))
+                // .addTrait("graceful_landing", 0);
+                .addTrait("extended_block_reach_0", 500, player -> player.getDataTracker().set(DexterityEntityTrackers.Player.REAL_BLOCK_REACH, 6.0F))
+                .addTrait("extended_block_reach_1", 1000, player -> player.getDataTracker().set(DexterityEntityTrackers.Player.REAL_BLOCK_REACH, 7.0F))
                 .addTrait("extended_entity_reach_0", 500, player -> player.getDataTracker().set(DexterityEntityTrackers.Player.REAL_ENTITY_REACH, 6.0F))
                 .addTrait("extended_entity_reach_1", 1000, player -> player.getDataTracker().set(DexterityEntityTrackers.Player.REAL_ENTITY_REACH, 7.0F));
     }

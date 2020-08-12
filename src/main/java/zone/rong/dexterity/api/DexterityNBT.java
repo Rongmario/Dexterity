@@ -33,6 +33,14 @@ public class DexterityNBT {
 
     }
 
+    public static class XPStore {
+
+        private static final String SUFFIX = "XPStore";
+
+        public static final String BREWING_STAND_XP_STORE_KEY = PREFIX.concat("BrewingStand").concat(SUFFIX);
+
+    }
+
     public static class EntityStats {
 
         public static final String ENTRY = PREFIX.concat("EntityStatsEntry");
