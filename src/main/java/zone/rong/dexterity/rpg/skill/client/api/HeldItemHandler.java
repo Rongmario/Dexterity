@@ -23,6 +23,10 @@
 
 package zone.rong.dexterity.rpg.skill.client.api;
 
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
+
+@Environment(EnvType.CLIENT)
 public interface HeldItemHandler {
 
     void ready(boolean ready);

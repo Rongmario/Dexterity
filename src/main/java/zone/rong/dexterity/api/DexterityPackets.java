@@ -35,6 +35,8 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Identifier;
 import zone.rong.dexterity.DexterityData;
 import zone.rong.dexterity.rpg.skill.client.UnlockToast;
+import zone.rong.dexterity.rpg.skill.client.XpHud;
+import zone.rong.dexterity.rpg.skill.client.api.HudRender;
 import zone.rong.dexterity.rpg.skill.types.Skill;
 import zone.rong.dexterity.rpg.skill.SkillEntry;
 import zone.rong.dexterity.rpg.skill.client.ImmutableSkillEntry;
@@ -52,6 +54,7 @@ public class DexterityPackets {
     public static final Identifier S2C_SKILLS_RESPONSE = new Identifier("dexterity", "c2s_skills_response");
     public static final Identifier S2C_SKILL_UNLOCKED = new Identifier("dexterity", "s2c_skill_unlocked");
     public static final Identifier S2C_LEVEL_REACHED = new Identifier("dexterity", "s2c_level_reached");
+    public static final Identifier S2C_EXP_ADDED = new Identifier("dexterity", "s2c_exp_added");
     public static final Identifier S2C_READY = new Identifier("dexterity", "s2c_ready");
 
     public static void registerC2SPackets() {
@@ -77,6 +80,10 @@ public class DexterityPackets {
         ClientSidePacketRegistry.INSTANCE.register(S2C_READY, (ctx, packet) -> {
             boolean ready = packet.readBoolean();
             ctx.getTaskQueue().execute(() -> ((HeldItemHandler) MinecraftClient.getInstance().getHeldItemRenderer()).ready(ready));
+        });
+        ClientSidePacketRegistry.INSTANCE.register(S2C_EXP_ADDED, (ctx, packet) -> {
+            int amount = packet.readInt();
+            ctx.getTaskQueue().execute(() -> HudRender.queue.add(((stack, delta) -> XpHud.render(MinecraftClient.getInstance(), stack, amount))));
         });
         SkillScreen.receivePacket();
     }

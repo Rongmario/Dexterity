@@ -117,13 +117,20 @@ public class SkillEntry {
         this.totalLevel = totalLevel;
     }
 
-    public void addXp(float xp) {
+    public void addXp(int xp) {
         if (player.getLuck() >= 1.0F) {
-            this.totalXp += xp * 2;
-            this.currentXp += xp * 2;
+            int modified = xp * 2;
+            this.totalXp += modified;
+            this.currentXp += modified;
+            PacketByteBuf packet = new PacketByteBuf(Unpooled.buffer());
+            packet.writeInt(modified);
+            ServerSidePacketRegistry.INSTANCE.sendToPlayer(player, DexterityPackets.S2C_EXP_ADDED, packet);
         } else {
             this.totalXp += xp;
             this.currentXp += xp;
+            PacketByteBuf packet = new PacketByteBuf(Unpooled.buffer());
+            packet.writeInt(xp);
+            ServerSidePacketRegistry.INSTANCE.sendToPlayer(player, DexterityPackets.S2C_EXP_ADDED, packet);
         }
         check(false);
     }

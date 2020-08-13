@@ -21,28 +21,21 @@
  *   WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package zone.rong.dexterity;
+package zone.rong.dexterity.rpg.skill.client.api;
 
-import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
-import net.fabricmc.fabric.api.client.rendering.v1.HudRenderCallback;
-import net.minecraft.client.options.KeyBinding;
-import zone.rong.dexterity.api.DexterityPackets;
-import zone.rong.dexterity.rpg.skill.client.api.HudRender;
+import net.minecraft.client.util.math.MatrixStack;
+
+import java.util.ArrayDeque;
+import java.util.Deque;
 
 @Environment(EnvType.CLIENT)
-public class DexterityClient implements ClientModInitializer {
+@FunctionalInterface
+public interface HudRender {
 
-    // TODO: make the keybind customizable
-    public static final KeyBinding SKILL_MENU = new KeyBinding("key.dexterity.open_skill_menu", 'F', "key.dexterity.category");
+    Deque<HudRender> queue = new ArrayDeque<>();
 
-    @Override
-    public void onInitializeClient() {
-        DexterityPackets.registerS2CPackets();
-        KeyBindingHelper.registerKeyBinding(SKILL_MENU);
-        HudRenderCallback.EVENT.register((stack, delta) -> HudRender.queue.forEach(h -> h.render(stack, delta)));
-    }
+    void render(MatrixStack stack, float delta);
 
 }

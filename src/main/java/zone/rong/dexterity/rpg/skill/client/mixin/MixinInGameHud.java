@@ -21,7 +21,7 @@
  *   WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package zone.rong.dexterity.rpg.skill.client.mixin.magic;
+package zone.rong.dexterity.rpg.skill.client.mixin;
 
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
@@ -39,7 +39,8 @@ import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
 import zone.rong.dexterity.DexterityData;
 import zone.rong.dexterity.api.DexterityEntityTrackers;
 
-@Mixin(InGameHud.class)
+// TODO - move to HudRenderCallback?
+@Mixin(value = InGameHud.class, priority = 2000)
 public class MixinInGameHud extends DrawableHelper {
 
     @Shadow @Final private MinecraftClient client;
