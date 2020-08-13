@@ -163,7 +163,23 @@ public class DexteritySkills {
                 .addMaterials(DENSE_ICE, METAL, REDSTONE_LAMP, SHULKER_BOX, STONE, REPAIR_STATION)
                 .addEntries(builder -> builder
                         .put(Blocks.NETHERRACK, 10)
+                        .put(Blocks.END_STONE, 35)
+                        .put(Blocks.GLOWSTONE, 60)
                         .put(Blocks.NETHER_BRICKS, 75)
+                        .put(Blocks.COAL_ORE, 100)
+                        .put(Blocks.MAGMA_BLOCK, 100)
+                        .put(Blocks.PRISMARINE, 100)
+                        .put(Blocks.PRISMARINE_SLAB, 100)
+                        .put(Blocks.PRISMARINE_STAIRS, 100)
+                        .put(Blocks.PRISMARINE_WALL, 100)
+                        .put(Blocks.PRISMARINE_BRICKS, 100)
+                        .put(Blocks.PRISMARINE_BRICK_STAIRS, 100)
+                        .put(Blocks.DARK_PRISMARINE, 200)
+                        .put(Blocks.DARK_PRISMARINE_SLAB, 200)
+                        .put(Blocks.DARK_PRISMARINE_STAIRS, 200)
+                        .put(Blocks.COAL_BLOCK, 300)
+                        .put(Blocks.DIAMOND_ORE, 800)
+                        .put(Blocks.EMERALD_ORE, 1200)
                         .put(Blocks.ANVIL, 1000))
                 .addTagEntries(builder -> builder
                         .put(BlockTags.BASE_STONE_OVERWORLD, 20)
@@ -171,6 +187,7 @@ public class DexteritySkills {
                         .put(BlockTags.CORAL_PLANTS, 70)
                         .put(BlockTags.CORAL_BLOCKS, 100)
                         .put(BlockTags.STONE_BRICKS, 100)
+                        .put(BlockTags.RAILS, 150)
                         .put(BlockTags.GOLD_ORES, 300));
     }
 
