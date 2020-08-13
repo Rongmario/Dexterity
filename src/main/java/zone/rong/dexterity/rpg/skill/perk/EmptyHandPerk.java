@@ -28,6 +28,7 @@ import net.fabricmc.fabric.api.network.ServerSidePacketRegistry;
 import net.minecraft.client.network.ClientPlayerInteractionManager;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
+import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Hand;
 import net.minecraft.util.Identifier;
 import net.minecraft.world.World;
@@ -50,7 +51,7 @@ public class EmptyHandPerk extends BasePerk {
 
     public static final Identifier PACKET = new Identifier("dexterity", "empty_hand_interact");
 
-    EmptyHandPerk(String name, Skill<?> parentSkill, Int2IntFunction cooldown, Int2IntFunction duration, InteractionTrigger trigger, BiPredicate<PlayerEntity, ItemStack> readyCondition, PerkStart startAction, PerkEnd endAction) {
+    EmptyHandPerk(String name, Skill<?> parentSkill, Int2IntFunction cooldown, Int2IntFunction duration, InteractionTrigger trigger, BiPredicate<ServerPlayerEntity, ItemStack> readyCondition, PerkStart startAction, PerkEnd endAction) {
         super(name, parentSkill, cooldown, duration, readyCondition, trigger, startAction, endAction);
     }
 

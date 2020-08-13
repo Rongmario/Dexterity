@@ -24,8 +24,8 @@
 package zone.rong.dexterity.rpg.skill.perk;
 
 import it.unimi.dsi.fastutil.ints.Int2IntFunction;
-import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
+import net.minecraft.server.network.ServerPlayerEntity;
 import zone.rong.dexterity.rpg.skill.perk.api.InteractionTrigger;
 import zone.rong.dexterity.rpg.skill.types.Skill;
 
@@ -36,7 +36,7 @@ public class PerkBuilder<P extends BasePerk> {
 
     protected boolean useHand = false;
     protected InteractionTrigger trigger;
-    protected BiPredicate<PlayerEntity, ItemStack> readyCondition;
+    protected BiPredicate<ServerPlayerEntity, ItemStack> readyCondition;
     protected BasePerk.PerkStart actionStart;
     protected BasePerk.PerkEnd actionEnd;
 
@@ -44,12 +44,12 @@ public class PerkBuilder<P extends BasePerk> {
         return new PerkBuilder<>();
     }
 
-    public PerkBuilder<P> readyCondition(Predicate<PlayerEntity> condition) {
+    public PerkBuilder<P> readyCondition(Predicate<ServerPlayerEntity> condition) {
         this.readyCondition = (player, stack) -> condition.test(player);
         return this;
     }
 
-    public PerkBuilder<P> readyCondition(BiPredicate<PlayerEntity, ItemStack> condition) {
+    public PerkBuilder<P> readyCondition(BiPredicate<ServerPlayerEntity, ItemStack> condition) {
         this.readyCondition = condition;
         return this;
     }

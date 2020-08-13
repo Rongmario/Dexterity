@@ -51,60 +51,47 @@ public class PerkManager implements Clearable {
 
     private final ServerPlayerEntity player;
     private final SkillManager skillManager;
+    private final CurrentPerk currentPerk;
     private final Map<BasePerk, Entry> cooldowns = new Object2ObjectOpenHashMap<>();
 
-    private Pair<BasePerk, ItemStack> readyPerk;
-    private Triple<BasePerk, Entry, ItemStack> currentPerk;
     private int tick;
-    private int readyTick;
 
     public PerkManager(ServerPlayerEntity player, SkillManager skillManager) {
         this.player = player;
         this.skillManager = skillManager;
+        this.currentPerk = CurrentPerk.create(player);
     }
 
     public void update() {
         ++this.tick;
-        if (this.readyPerk != null) { // If readyStack is present
-            if (this.readyTick == 80 || !ItemStack.areEqual(readyPerk.getRight(), player.getMainHandStack())) {
-                PacketByteBuf packet = new PacketByteBuf(Unpooled.buffer());
-                packet.writeBoolean(false);
-                ServerSidePacketRegistry.INSTANCE.sendToPlayer(player, DexterityPackets.S2C_READY, packet);
-                // If readyTick == 80 or if the readyStack and heldItem isn't the same
-                player.sendMessage(new TranslatableText("message.dexterity.perk.lowered").append(getCorrectName()).formatted(Formatting.GRAY), true);
-                // Reset
-                this.readyPerk = null;
-                this.readyTick = 0;
-            } else {
-                // If readyStack still is present and matches heldItem + readyTick hasn't reached 80 -> we increment readyTick
-                ++this.readyTick;
-            }
-        } else if (this.currentPerk != null && this.currentPerk.getMiddle().endTick <= this.tick) {
+        if (this.currentPerk.state == PerkState.READY && (this.currentPerk.entry.endTick <= this.tick || !this.currentPerk.perk.readyCondition.test(player, player.getMainHandStack()))) {
+            PacketByteBuf packet = new PacketByteBuf(Unpooled.buffer());
+            packet.writeBoolean(false);
+            ServerSidePacketRegistry.INSTANCE.sendToPlayer(player, DexterityPackets.S2C_READY, packet);
+            player.sendMessage(new TranslatableText("message.dexterity.perk.lowered").append(getCorrectName()).formatted(Formatting.GRAY), true);
+            this.currentPerk.clear();
+        } else if (this.currentPerk.state == PerkState.ACTIVE && this.currentPerk.entry.endTick <= this.tick) {
             endPerk();
         }
         // Last operation in the update, so the perk cannot be activated on the refreshed tick
         this.cooldowns.entrySet().removeIf(this::reachedCooldown);
     }
 
+    // TODO - this may need fixing or polishing!
     @Override
     public void clear() {
-        if (this.currentPerk != null) {
-            CompoundTag tag = this.currentPerk.getRight().getTag();
-            tag.putBoolean(DexterityHelper.DEXTERITY_PERK_TAGGED, false);
+        if (this.currentPerk.state == PerkState.ACTIVE) {
+            CompoundTag tag = this.currentPerk.stack.getTag();
             tag.putBoolean(DexterityHelper.DEXTERITY_GLINT_TAG, false);
-            this.currentPerk = null;
+        } else if (this.currentPerk.state != PerkState.INACTIVE) {
+            this.currentPerk.clear();
         }
-        this.readyPerk = null;
     }
 
     public void readyUp(BasePerk perk) {
         ItemStack stack = player.getMainHandStack();
-        if (this.currentPerk == null && isPerkReady(perk) && perk.readyCondition.test(player, stack)) {
-            PacketByteBuf packet = new PacketByteBuf(Unpooled.buffer());
-            packet.writeBoolean(true);
-            ServerSidePacketRegistry.INSTANCE.sendToPlayer(player, DexterityPackets.S2C_READY, packet);
-            this.readyPerk = Pair.of(perk, stack);
-            ++this.readyTick;
+        if (this.currentPerk.state == PerkState.INACTIVE && isPerkReady(perk) && perk.readyCondition.test(player, stack)) {
+            this.currentPerk.of(perk, PerkState.READY, new Entry(this.tick, this.tick + 80), stack);
             player.sendMessage(new TranslatableText("message.dexterity.perk.ready").append(getCorrectName()).formatted(Formatting.RED), true);
         } else if (isPerkActive(perk)) {
             player.sendMessage(perk.displayName.shallowCopy().append(new TranslatableText("message.dexterity.perk.still_active", Math.round(getDurationLeft() / 20F))).formatted(Formatting.GOLD), true);
@@ -112,33 +99,28 @@ public class PerkManager implements Clearable {
     }
 
     public ActionResult setPerkActive(BasePerk perk) {
-        if (isPerkReady(perk) && isPlayerReady() && perk.readyCondition.test(player, readyPerk.getRight())) {
+        if (isPerkReady(perk) && isPlayerReady()) {
             ItemStack stack = player.getMainHandStack();
             if (!(perk instanceof EmptyHandPerk)) { // Do something for fists!
-                CompoundTag tag = stack.getOrCreateTag();
-                tag.putBoolean(DexterityHelper.DEXTERITY_PERK_TAGGED, true);
+                CompoundTag tag = stack.getTag();
                 tag.putBoolean(DexterityHelper.DEXTERITY_GLINT_TAG, true);
             }
-            this.currentPerk = Triple.of(perk, new Entry(this.tick, this.tick + perk.getDuration().applyAsInt(getPerkSkillLevel(perk))), stack);
-            this.readyPerk = null;
+            this.currentPerk.of(perk, PerkState.ACTIVE, new Entry(this.tick, this.tick + perk.getDuration().applyAsInt(getPerkSkillLevel(perk))), stack);
             return perk.actionStart.callStart(perk, player, player.world, stack);
         }
         return ActionResult.PASS;
     }
 
     public void endPerk() {
-        BasePerk perk = this.currentPerk.getLeft();
-        ItemStack stack = this.currentPerk.getRight();
+        BasePerk perk = this.currentPerk.perk;
+        ItemStack stack = this.currentPerk.stack;
         perk.actionEnd.callEnd(perk, player, player.world, stack); // Execute the perk's ending action
         if (!(perk instanceof EmptyHandPerk)) { // If the current perk is a not an EmptyHandPerk (empty stack)
-            CompoundTag tag = this.currentPerk.getRight().getTag();
-            if (tag != null) { // And if the tag isn't null, make sure the tags are set to false
-                tag.putBoolean(DexterityHelper.DEXTERITY_PERK_TAGGED, false);
-                tag.putBoolean(DexterityHelper.DEXTERITY_GLINT_TAG, false);
-            }
+            CompoundTag tag = stack.getTag();
+            tag.putBoolean(DexterityHelper.DEXTERITY_GLINT_TAG, false);
         }
         this.setPerkOnCooldown(perk); // We set the perk to cooldown - so the player cannot use it again in the next tick ~ until cooldown ends
-        this.currentPerk = null; // And reset the currentPerk
+        this.currentPerk.clear(); // And clear the currentPerk
     }
 
     public void setPerkOnCooldown(BasePerk perk) {
@@ -150,35 +132,19 @@ public class PerkManager implements Clearable {
     }
 
     public boolean isPerkActive(ItemStack stack) {
-        return currentPerk != null && stack.isItemEqual(currentPerk.getRight()) && isTagged(player.getMainHandStack());
+        return this.currentPerk.state == PerkState.ACTIVE && stack.isItemEqual(this.currentPerk.stack) && isTagged(player.getMainHandStack());
     }
 
     public boolean isPerkActive(BasePerk perk) {
-        return currentPerk != null && currentPerk.getLeft() == perk;
+        return this.currentPerk.state == PerkState.ACTIVE && this.currentPerk.perk == perk;
     }
 
     public boolean isPlayerReady() {
-        return readyPerk != null && ItemStack.areEqual(readyPerk.getRight(), player.getMainHandStack());
-    }
-
-    public BasePerk getReadyPerk() {
-        return readyPerk.getLeft();
-    }
-
-    public BasePerk getCurrentPerk() {
-        return currentPerk.getLeft();
-    }
-
-    public ItemStack getReadyStack() {
-        return readyPerk.getRight();
-    }
-
-    public ItemStack getCurrentStack() {
-        return currentPerk.getRight();
+        return this.currentPerk.state == PerkState.READY;
     }
 
     public int getDurationLeft() {
-        return currentPerk == null ? 0 : currentPerk.getMiddle().endTick - this.tick;
+        return currentPerk == null ? 0 : currentPerk.entry.endTick - this.tick;
     }
 
     public int getCooldown(BasePerk perk) {
@@ -186,7 +152,7 @@ public class PerkManager implements Clearable {
     }
 
     private boolean isTagged(ItemStack stack) {
-        return stack.getOrCreateTag().contains("DexterityTag") && stack.getTag().getBoolean("DexterityTag");
+        return stack.getTag().contains("DexterityGlint");
     }
 
     private boolean reachedCooldown(Map.Entry<BasePerk, Entry> pair) {
@@ -202,7 +168,7 @@ public class PerkManager implements Clearable {
     }
 
     private Text getCorrectName() {
-        return this.readyPerk.getRight().isEmpty() ? new TranslatableText("message.dexterity.fist") : this.readyPerk.getRight().getName();
+        return this.currentPerk.stack.isEmpty() ? new TranslatableText("message.dexterity.fist") : this.currentPerk.stack.getName();
     }
 
     class Entry {
@@ -214,6 +180,60 @@ public class PerkManager implements Clearable {
             this.startTick = startTick;
             this.endTick = endTick;
         }
+
+    }
+
+    static class CurrentPerk {
+
+        private final ServerPlayerEntity player;
+
+        public BasePerk perk;
+        public PerkState state;
+        public Entry entry;
+        public ItemStack stack;
+
+        public static CurrentPerk create(ServerPlayerEntity player) {
+            return new CurrentPerk(player, null, PerkState.INACTIVE, null, null);
+        }
+
+        private CurrentPerk(ServerPlayerEntity player, BasePerk perk, PerkState state, Entry entry, ItemStack stack) {
+            this.player = player;
+            this.perk = perk;
+            this.state = state;
+            this.entry = entry;
+            this.stack = stack;
+        }
+
+        void of(BasePerk perk, PerkState state, Entry entry, ItemStack stack) {
+            this.perk = perk;
+            this.state = state;
+            this.entry = entry;
+            this.stack = stack;
+            if (state == PerkState.READY) {
+                PacketByteBuf packet = new PacketByteBuf(Unpooled.buffer());
+                packet.writeBoolean(true);
+                ServerSidePacketRegistry.INSTANCE.sendToPlayer(player, DexterityPackets.S2C_READY, packet);
+            } else if (state == PerkState.INACTIVE) {
+                PacketByteBuf packet = new PacketByteBuf(Unpooled.buffer());
+                packet.writeBoolean(false);
+                ServerSidePacketRegistry.INSTANCE.sendToPlayer(player, DexterityPackets.S2C_READY, packet);
+            }
+        }
+
+        void clear() {
+            this.perk = null;
+            this.state = PerkState.INACTIVE;
+            this.entry = null;
+            this.stack = null;
+        }
+
+    }
+
+    enum PerkState {
+
+        INACTIVE,
+        READY,
+        ACTIVE;
 
     }
 

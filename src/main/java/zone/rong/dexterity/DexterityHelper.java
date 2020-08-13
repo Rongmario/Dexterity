@@ -40,7 +40,6 @@ import java.util.List;
 public class DexterityHelper {
 
     public static final String DEXTERITY_GLINT_TAG = "DexterityGlint";
-    public static final String DEXTERITY_PERK_TAGGED = "DexterityTag";
     public static final String DEXTERITY_PLAYER_SKILLS = "DexteritySkills";
     public static final String DEXTERITY_PLAYER_SKILLS_CURRENT_XP = "CurrentXp";
     public static final String DEXTERITY_PLAYER_SKILLS_TOTAL_XP = "TotalXp";

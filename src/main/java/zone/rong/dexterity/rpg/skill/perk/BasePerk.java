@@ -32,6 +32,7 @@ import net.minecraft.block.BlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
+import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.TranslatableText;
@@ -58,12 +59,12 @@ public class BasePerk implements Perk {
     protected final MutableText displayName;
     protected final Skill<?> parentSkill;
     protected final IntUnaryOperator levelApplyToCooldown, levelApplyToDuration;
-    protected final BiPredicate<PlayerEntity, ItemStack> readyCondition;
+    protected final BiPredicate<ServerPlayerEntity, ItemStack> readyCondition;
     protected final InteractionTrigger trigger;
     protected final PerkStart actionStart;
     protected final PerkEnd actionEnd;
 
-    public BasePerk(String name, Skill<?> parentSkill, IntUnaryOperator cooldown, IntUnaryOperator duration, BiPredicate<PlayerEntity, ItemStack> readyCondition, InteractionTrigger trigger, PerkStart start, PerkEnd end) {
+    public BasePerk(String name, Skill<?> parentSkill, IntUnaryOperator cooldown, IntUnaryOperator duration, BiPredicate<ServerPlayerEntity, ItemStack> readyCondition, InteractionTrigger trigger, PerkStart start, PerkEnd end) {
         this.name = name;
         this.displayName = new TranslatableText("perk.dexterity.".concat(name));
         this.parentSkill = parentSkill;
@@ -108,7 +109,7 @@ public class BasePerk implements Perk {
         return levelApplyToCooldown;
     }
 
-    public BiPredicate<PlayerEntity, ItemStack> getReadyCondition() {
+    public BiPredicate<ServerPlayerEntity, ItemStack> getReadyCondition() {
         return readyCondition;
     }
 

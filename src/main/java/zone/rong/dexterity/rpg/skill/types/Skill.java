@@ -100,6 +100,7 @@ public class Skill<S extends Skill<S>> implements Comparable<S>, Unlockable {
         return self();
     }
 
+    @SuppressWarnings("unchecked")
     protected S self() {
         return (S) this;
     }

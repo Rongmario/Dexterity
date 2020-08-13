@@ -25,8 +25,8 @@ package zone.rong.dexterity.rpg.skill.perk;
 
 import it.unimi.dsi.fastutil.ints.Int2IntFunction;
 import net.fabricmc.fabric.api.event.player.UseItemCallback;
-import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
+import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Hand;
 import net.minecraft.util.TypedActionResult;
 import zone.rong.dexterity.rpg.skill.types.Skill;
@@ -39,7 +39,7 @@ public class GenericPerk extends BasePerk {
 
     protected final UseItemCallback callbackStart;
 
-    GenericPerk(String name, Skill<?> parentSkill, Int2IntFunction cooldown, Int2IntFunction duration, InteractionTrigger trigger, BiPredicate<PlayerEntity, ItemStack> readyCondition, PerkStart actionStart, PerkEnd actionEnd) {
+    GenericPerk(String name, Skill<?> parentSkill, Int2IntFunction cooldown, Int2IntFunction duration, InteractionTrigger trigger, BiPredicate<ServerPlayerEntity, ItemStack> readyCondition, PerkStart actionStart, PerkEnd actionEnd) {
         super(name, parentSkill, cooldown, duration, readyCondition, trigger, actionStart, actionEnd);
         this.callbackStart = trigger == InteractionTrigger.NONE ? null : (player, world, hand) -> {
             if (world.isClient || hand == Hand.OFF_HAND || player.isSpectator() || player.isCreative()) {
