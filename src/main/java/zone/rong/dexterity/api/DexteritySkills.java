@@ -97,7 +97,6 @@ public class DexteritySkills {
         initMining();
         initSwordsmanship();
         initUnarmed();
-        // prepareAdditionalDropConditions();
     }
 
     public static void initAcrobatics() {
@@ -168,6 +167,7 @@ public class DexteritySkills {
                         .put(Blocks.NETHER_BRICKS, 75)
                         .put(Blocks.COAL_ORE, 100)
                         .put(Blocks.MAGMA_BLOCK, 100)
+                        .put(Blocks.OBSIDIAN, 100)
                         .put(Blocks.PRISMARINE, 100)
                         .put(Blocks.PRISMARINE_SLAB, 100)
                         .put(Blocks.PRISMARINE_STAIRS, 100)
@@ -177,18 +177,25 @@ public class DexteritySkills {
                         .put(Blocks.DARK_PRISMARINE, 200)
                         .put(Blocks.DARK_PRISMARINE_SLAB, 200)
                         .put(Blocks.DARK_PRISMARINE_STAIRS, 200)
+                        .put(Blocks.CRYING_OBSIDIAN, 250)
+                        .put(Blocks.IRON_ORE, 250)
+                        .put(Blocks.NETHER_GOLD_ORE, 300)
                         .put(Blocks.COAL_BLOCK, 300)
+                        .put(Blocks.GOLD_ORE, 500)
+                        .put(Blocks.IRON_BLOCK, 750)
                         .put(Blocks.DIAMOND_ORE, 800)
+                        .put(Blocks.ANVIL, 1000)
                         .put(Blocks.EMERALD_ORE, 1200)
-                        .put(Blocks.ANVIL, 1000))
+                        .put(Blocks.GOLD_BLOCK, 1500)
+                        .put(Blocks.DIAMOND_BLOCK, 2400)
+                        .put(Blocks.EMERALD_BLOCK, 3600))
                 .addTagEntries(builder -> builder
                         .put(BlockTags.BASE_STONE_OVERWORLD, 20)
                         .put(BlockTags.STONE_PRESSURE_PLATES, 50)
                         .put(BlockTags.CORAL_PLANTS, 70)
                         .put(BlockTags.CORAL_BLOCKS, 100)
                         .put(BlockTags.STONE_BRICKS, 100)
-                        .put(BlockTags.RAILS, 150)
-                        .put(BlockTags.GOLD_ORES, 300));
+                        .put(BlockTags.RAILS, 150));
     }
 
     private static void initSwordsmanship() {

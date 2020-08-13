@@ -87,8 +87,10 @@ public class DexterityASM implements Runnable {
     // TODO modify triple drop chance, and double will happen as a trait
     public static List<ItemStack> modifyDrops(BlockState state, LootContext.Builder builder, ServerWorld world, BlockPos pos, Entity entity) {
         List<ItemStack> builtStacks = state.getDroppedStacks(builder);
-        if (entity instanceof ServerPlayerEntity && !((ServerWorldArtificialBlockStatesHandler) world).isArtificial(pos) && ((SkillHandler) entity).getPerkManager().isPerkActive(DexteritySkills.SUPER_BREAK) && ((ServerPlayerEntity) entity).getRandom().nextFloat() >= 0.5F) {
-            return builtStacks.stream().flatMap(stack -> Stream.generate(() -> stack).limit(3)).collect(Collectors.toList());
+        if (entity instanceof ServerPlayerEntity && !((ServerWorldArtificialBlockStatesHandler) world).isArtificial(pos) && ((ServerPlayerEntity) entity).getRandom().nextFloat() >= 0.5F) {
+            return builtStacks.stream()
+                    .flatMap(stack -> Stream.generate(() -> stack).limit(((SkillHandler) entity).getPerkManager().isPerkActive(DexteritySkills.SUPER_BREAK) ? 3 : 2))
+                    .collect(Collectors.toList());
         }
         return builtStacks;
     }

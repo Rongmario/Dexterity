@@ -24,6 +24,7 @@
 package zone.rong.dexterity.rpg.skill;
 
 import io.netty.buffer.Unpooled;
+import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
 import net.fabricmc.fabric.api.network.ServerSidePacketRegistry;
 import net.fabricmc.fabric.api.server.PlayerStream;
 import net.minecraft.network.MessageType;
@@ -37,12 +38,16 @@ import net.minecraft.text.TranslatableText;
 import zone.rong.dexterity.DexterityData;
 import zone.rong.dexterity.api.DexterityPackets;
 import zone.rong.dexterity.rpg.skill.trait.ModifyPlayerTrait;
+import zone.rong.dexterity.rpg.skill.trait.Trait;
 import zone.rong.dexterity.rpg.skill.types.Skill;
+
+import java.util.Set;
 
 public class SkillEntry {
 
     private final ServerPlayerEntity player;
     private final Skill<?> skill;
+    private final Set<Trait> availableTraits = new ObjectOpenHashSet<>();
 
     private long totalXp;
     private int currentXp;
@@ -62,33 +67,42 @@ public class SkillEntry {
         int difference = getXpNeededForNextLevel();
         if (difference <= 0) {
             ++this.totalLevel;
-            if (this.totalLevel == 1) {
-                PacketByteBuf packet = new PacketByteBuf(Unpooled.buffer());
-                packet.writeInt(DexterityData.SKILLS.getRawId(skill));
-                ServerSidePacketRegistry.INSTANCE.sendToPlayer(player, DexterityPackets.S2C_SKILL_UNLOCKED, packet);
-            }
-            this.currentXp = Math.abs(difference);
-            if (this.totalLevel % 10 == 0 && !(player.server instanceof IntegratedServer)) {
-                if (this.totalLevel % 50 == 0) {
-                    PlayerStream.all(player.server).filter(p -> p != player).forEach(p -> p.playSound(SoundEvents.UI_TOAST_CHALLENGE_COMPLETE, SoundCategory.PLAYERS, 0.75F, 1.0F));
-                }
-                player.server.getPlayerManager().broadcastChatMessage(
-                        new TranslatableText("message.dexterity.congratulations",
-                                player.getName(), skill.getName(), totalLevel)
-                                .styled(style -> style.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, skill.getDescription()))), MessageType.CHAT, player.getUuid());
-            }
-            skill.getTraitLookup().stream()
-                    .filter(t -> t instanceof ModifyPlayerTrait)
-                    .filter(t -> t.getLevelToUnlock() <= this.totalLevel)
-                    .forEach(t -> ((ModifyPlayerTrait) t).applyModification(player));
+            onLevelUp(difference);
             check(true);
         } else if (recursive && this.totalLevelPriorCheck != 0 && this.totalLevelPriorCheck < this.totalLevel) {
             PacketByteBuf packet = new PacketByteBuf(Unpooled.buffer());
             packet.writeInt(DexterityData.SKILLS.getRawId(skill));
             packet.writeInt(this.totalLevelPriorCheck);
-            packet.writeInt(totalLevel);
+            packet.writeInt(this.totalLevel);
             ServerSidePacketRegistry.INSTANCE.sendToPlayer(player, DexterityPackets.S2C_LEVEL_REACHED, packet);
         }
+    }
+
+    void onLevelUp(int difference) {
+        if (this.totalLevel == 1) {
+            PacketByteBuf packet = new PacketByteBuf(Unpooled.buffer());
+            packet.writeInt(DexterityData.SKILLS.getRawId(skill));
+            ServerSidePacketRegistry.INSTANCE.sendToPlayer(player, DexterityPackets.S2C_SKILL_UNLOCKED, packet);
+        }
+        this.currentXp = Math.abs(difference);
+        if (this.totalLevel % 10 == 0 && !(player.server instanceof IntegratedServer)) {
+            if (this.totalLevel % 50 == 0) {
+                PlayerStream.all(player.server).filter(p -> p != player).forEach(p -> p.playSound(SoundEvents.UI_TOAST_CHALLENGE_COMPLETE, SoundCategory.PLAYERS, 0.75F, 1.0F));
+            }
+            player.server.getPlayerManager().broadcastChatMessage(
+                    new TranslatableText("message.dexterity.congratulations",
+                            player.getName(), skill.getName(), totalLevel)
+                            .styled(style -> style.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, skill.getDescription()))), MessageType.CHAT, player.getUuid());
+        }
+        skill.getTraitLookup().stream()
+                .filter(t -> !availableTraits.contains(t))
+                .filter(t -> t.getLevelToUnlock() <= this.totalLevel)
+                .forEach(t -> {
+                    if (t instanceof ModifyPlayerTrait) {
+                        ((ModifyPlayerTrait) t).applyModification(player);
+                    }
+                    availableTraits.add(t);
+                });
     }
 
     public void setTotalXp(long totalXp) {

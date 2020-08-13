@@ -25,6 +25,7 @@ package zone.rong.dexterity.rpg.skill.types;
 
 import com.google.common.collect.ImmutableMap;
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
+import it.unimi.dsi.fastutil.objects.Object2IntMap.Entry;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
 import net.minecraft.item.Item;
@@ -32,7 +33,6 @@ import net.minecraft.item.ItemConvertible;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tag.Tag;
 import net.minecraft.util.registry.Registry;
-import zone.rong.dexterity.api.DexterityTagDelegationManager;
 
 import java.util.Set;
 import java.util.function.Predicate;
@@ -41,9 +41,9 @@ import java.util.function.UnaryOperator;
 public class AbstractToolSkill<S extends Skill<S>, A> extends Skill<S> {
 
     protected final Set<Item> requiredTools = new ObjectOpenHashSet<>();
+    protected final Set<Tag<Item>> requiredToolTags = new ObjectOpenHashSet<>();
     protected final Object2IntMap<A> affectedEntries = new Object2IntOpenHashMap<>();
-
-    protected final DexterityTagDelegationManager manager = DexterityTagDelegationManager.ofSingletons(this.requiredTools, this.affectedEntries);
+    protected final Object2IntMap<Tag<A>> affectedEntryTags = new Object2IntOpenHashMap<>();
 
     protected AbstractToolSkill(String path, ItemConvertible displayItem, int colour) {
         super(path, displayItem, colour);
@@ -64,7 +64,7 @@ public class AbstractToolSkill<S extends Skill<S>, A> extends Skill<S> {
     }
 
     public S addTool(Tag<Item> tag) {
-        manager.setDelegate(this.requiredTools, tag);
+        this.requiredToolTags.add(tag);
         return self();
     }
 
@@ -74,19 +74,11 @@ public class AbstractToolSkill<S extends Skill<S>, A> extends Skill<S> {
     }
 
     public boolean isToolCompatible(ItemStack stack) {
-        return this.requiredTools.contains(stack.getItem());
-    }
-
-    public DexterityTagDelegationManager getManager() {
-        return manager;
-    }
-
-    public Set<Item> getRequiredTools() {
-        return requiredTools;
+        return requiredToolTags.stream().anyMatch(t -> stack.getItem().isIn(t)) || requiredTools.contains(stack.getItem());
     }
 
     public int getXp(A entry) {
-        return this.affectedEntries.getOrDefault(entry, 1);
+        return affectedEntries.getOrDefault(entry, affectedEntryTags.object2IntEntrySet().stream().filter(e -> e.getKey().contains(entry)).mapToInt(Entry::getIntValue).findAny().orElse(20));
     }
 
     public S addEntries(UnaryOperator<ImmutableMap.Builder<A, Integer>> entries) {
@@ -94,8 +86,8 @@ public class AbstractToolSkill<S extends Skill<S>, A> extends Skill<S> {
         return self();
     }
 
-    public S addTagEntries(UnaryOperator<ImmutableMap.Builder<Tag<?>, Integer>> entries) { // Tag<A> but shit is annoying
-        manager.mapDelegate(this.affectedEntries, entries.apply(new ImmutableMap.Builder<>()).build());
+    public S addTagEntries(UnaryOperator<ImmutableMap.Builder<Tag<A>, Integer>> entries) {
+        this.affectedEntryTags.putAll(entries.apply(new ImmutableMap.Builder<>()).build());
         return self();
     }
 
