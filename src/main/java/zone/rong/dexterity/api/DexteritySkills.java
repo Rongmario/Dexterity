@@ -123,7 +123,14 @@ public class DexteritySkills {
     private static void initCarpentry() {
         CARPENTRY
                 .addTool(FabricToolTags.AXES)
-                .addMaterials(BAMBOO, BAMBOO_SAPLING, NETHER_WOOD, WOOD);
+                .addMaterials(BAMBOO, BAMBOO_SAPLING, NETHER_WOOD, WOOD)
+                .addTagEntries(builder -> builder
+                        .put(BlockTags.OAK_LOGS, 50)
+                        .put(BlockTags.SPRUCE_LOGS, 60)
+                        .put(BlockTags.ACACIA_LOGS, 70)
+                        .put(BlockTags.BIRCH_LOGS, 70)
+                        .put(BlockTags.PLANKS, 80)
+                        .put(BlockTags.DARK_OAK_LOGS, 85));
     }
 
     private static void initExcavation() {
@@ -131,7 +138,20 @@ public class DexteritySkills {
                 .addTrait("archaeology", 100)
                 .addPerk(GIGA_DRILL_BREAK)
                 .addTool(FabricToolTags.SHOVELS)
-                .addMaterials(AGGREGATE, ORGANIC_PRODUCT, SNOW_BLOCK, SNOW_LAYER, SOIL);
+                .addMaterials(AGGREGATE, ORGANIC_PRODUCT, SNOW_BLOCK, SNOW_LAYER, SOIL)
+                .addEntries(builder -> builder
+                        .put(Blocks.SNOW, 1)
+                        .put(Blocks.DIRT, 20)
+                        .put(Blocks.COARSE_DIRT, 20)
+                        .put(Blocks.PODZOL, 20)
+                        .put(Blocks.GRASS_BLOCK, 20)
+                        .put(Blocks.SAND, 25)
+                        .put(Blocks.RED_SAND, 25)
+                        .put(Blocks.SNOW_BLOCK, 25)
+                        .put(Blocks.GRAVEL, 30)
+                        .put(Blocks.CLAY, 30)
+                        .put(Blocks.SOUL_SAND, 40)
+                        .put(Blocks.MYCELIUM, 50));
     }
 
     private static void initMining() {
