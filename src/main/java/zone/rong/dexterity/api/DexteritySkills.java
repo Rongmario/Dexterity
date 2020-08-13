@@ -161,7 +161,17 @@ public class DexteritySkills {
                 .addPerk(SUPER_BREAK)
                 .addTool(FabricToolTags.PICKAXES)
                 .addMaterials(DENSE_ICE, METAL, REDSTONE_LAMP, SHULKER_BOX, STONE, REPAIR_STATION)
-                .addTagEntries(builder -> builder.put(BlockTags.ANVIL, 200).put(BlockTags.GOLD_ORES, 50));
+                .addEntries(builder -> builder
+                        .put(Blocks.NETHERRACK, 10)
+                        .put(Blocks.NETHER_BRICKS, 75)
+                        .put(Blocks.ANVIL, 1000))
+                .addTagEntries(builder -> builder
+                        .put(BlockTags.BASE_STONE_OVERWORLD, 20)
+                        .put(BlockTags.STONE_PRESSURE_PLATES, 50)
+                        .put(BlockTags.CORAL_PLANTS, 70)
+                        .put(BlockTags.CORAL_BLOCKS, 100)
+                        .put(BlockTags.STONE_BRICKS, 100)
+                        .put(BlockTags.GOLD_ORES, 300));
     }
 
     private static void initSwordsmanship() {
