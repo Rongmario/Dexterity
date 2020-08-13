@@ -104,9 +104,7 @@ public class DexteritySkills {
         ACROBATICS
                 .addTrait("graceful_landing", 0)
                 .addTrait("extended_block_reach_0", 500, player -> player.getDataTracker().set(DexterityEntityTrackers.Player.REAL_BLOCK_REACH, 6.0F))
-                .addTrait("extended_block_reach_1", 1000, player -> player.getDataTracker().set(DexterityEntityTrackers.Player.REAL_BLOCK_REACH, 7.0F))
-                .addTrait("extended_entity_reach_0", 500, player -> player.getDataTracker().set(DexterityEntityTrackers.Player.REAL_ENTITY_REACH, 6.0F))
-                .addTrait("extended_entity_reach_1", 1000, player -> player.getDataTracker().set(DexterityEntityTrackers.Player.REAL_ENTITY_REACH, 7.0F));
+                .addTrait("extended_block_reach_1", 1000, player -> player.getDataTracker().set(DexterityEntityTrackers.Player.REAL_BLOCK_REACH, 7.0F));
     }
 
     private static void initArchery() {
@@ -130,6 +128,7 @@ public class DexteritySkills {
 
     private static void initExcavation() {
         EXCAVATION
+                .addTrait("archaeology", 100)
                 .addPerk(GIGA_DRILL_BREAK)
                 .addTool(FabricToolTags.SHOVELS)
                 .addMaterials(AGGREGATE, ORGANIC_PRODUCT, SNOW_BLOCK, SNOW_LAYER, SOIL);
@@ -137,7 +136,8 @@ public class DexteritySkills {
 
     private static void initMining() {
         MINING
-                .addTrait("double_drops", 0)
+                .addTrait("double_drops", 100)
+                .addTrait("blast_mining", 200)
                 .addPerk(SUPER_BREAK)
                 .addTool(FabricToolTags.PICKAXES)
                 .addMaterials(DENSE_ICE, METAL, REDSTONE_LAMP, SHULKER_BOX, STONE, REPAIR_STATION)
@@ -151,6 +151,8 @@ public class DexteritySkills {
 
     private static void initUnarmed() {
         UNARMED
+                .addTrait("extended_entity_reach_0", 500, player -> player.getDataTracker().set(DexterityEntityTrackers.Player.REAL_ENTITY_REACH, 6.0F))
+                .addTrait("extended_entity_reach_1", 1000, player -> player.getDataTracker().set(DexterityEntityTrackers.Player.REAL_ENTITY_REACH, 7.0F))
                 .addPerk(BERSERK)
                 .addTool(ItemStack.EMPTY);
     }
