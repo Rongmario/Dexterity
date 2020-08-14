@@ -24,11 +24,13 @@
 package zone.rong.dexterity;
 
 import net.fabricmc.api.ModInitializer;
+import net.minecraft.util.registry.Registry;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import zone.rong.dexterity.api.DexterityEntityAttributes;
 import zone.rong.dexterity.api.DexterityPackets;
 import zone.rong.dexterity.api.DexteritySkills;
+import zone.rong.dexterity.rpg.land.LandDeedItem;
 import zone.rong.dexterity.rpg.skill.perk.Perk;
 import zone.rong.dexterity.rpg.skill.types.Skill;
 
@@ -45,6 +47,7 @@ public class DexterityMain implements ModInitializer {
         DexterityEntityAttributes.init();
         DexterityPackets.registerC2SPackets();
         SKILLS.stream().map(Skill::getPerks).forEach(perks -> perks.forEach(Perk::registerExtra));
+        Registry.register(Registry.ITEM, LandDeedItem.INSTANCE.identifier, LandDeedItem.INSTANCE);
     }
 
 }

@@ -24,9 +24,14 @@
 package zone.rong.dexterity.rpg.land;
 
 import net.minecraft.item.Item;
+import net.minecraft.util.Identifier;
 
 // TODO
 public class LandDeedItem extends Item {
+
+    public static final LandDeedItem INSTANCE = new LandDeedItem();
+
+    public final Identifier identifier = new Identifier("dexterity", "land_deed");
 
     public LandDeedItem() {
         super(new Settings().fireproof().maxCount(1));
