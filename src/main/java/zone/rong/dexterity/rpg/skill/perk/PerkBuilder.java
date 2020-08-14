@@ -34,7 +34,7 @@ import java.util.function.Predicate;
 
 public class PerkBuilder<P extends Perk> {
 
-    protected boolean useHand = false;
+    @Deprecated protected boolean useHand = false;
     protected InteractionTrigger trigger;
     protected BiPredicate<ServerPlayerEntity, ItemStack> readyCondition;
     protected Perk.PerkStart actionStart;
@@ -54,6 +54,7 @@ public class PerkBuilder<P extends Perk> {
         return this;
     }
 
+    @Deprecated
     public PerkBuilder<P> useHand() {
         this.useHand = true;
         return this;
@@ -76,9 +77,11 @@ public class PerkBuilder<P extends Perk> {
 
     @SuppressWarnings("unchecked")
     public P build(String namespace, String path, Skill parentSkill, Int2IntFunction cooldown, Int2IntFunction duration) {
+        /*
         if (useHand) {
             return (P) new EmptyHandPerk(namespace, path, parentSkill, cooldown, duration, readyCondition, trigger, actionStart, actionEnd);
         }
+         */
         return (P) new Perk(namespace, path, parentSkill, cooldown, duration, readyCondition, trigger, actionStart, actionEnd);
     }
 

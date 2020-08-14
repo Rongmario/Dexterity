@@ -76,7 +76,7 @@ public class DexteritySkills {
 
     public static final Perk GIGA_DRILL_BREAK = DexterityHelper.getGenericBlockBreakPerk("dexterity", "giga_drill_break", EXCAVATION);
 
-    public static final EmptyHandPerk BERSERK = PerkBuilder.<EmptyHandPerk>of()
+    public static final Perk BERSERK = PerkBuilder.of()
             .readyCondition((player, stack) -> stack.isEmpty())
             .start((player, world, stack) -> {
                 // Fixme TEMP VALUE
@@ -84,7 +84,7 @@ public class DexteritySkills {
                 return ActionResult.PASS;
             })
             .end((player, world, stack) -> player.getAttributeInstance(EntityAttributes.GENERIC_ATTACK_DAMAGE).removeModifier(DexterityEntityAttributes.DAMAGE_AMOUNT_PERK_UUID))
-            .useHand()
+            // .useHand()
             .perkTrigger(InteractionTrigger.ATTACK_ENTITY)
             .build("dexterity", "berserk", UNARMED, s -> 200, s -> 100);
 

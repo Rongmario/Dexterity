@@ -24,7 +24,6 @@
 package zone.rong.dexterity.rpg.skill.perk;
 
 import it.unimi.dsi.fastutil.ints.Int2IntFunction;
-import net.fabricmc.fabric.api.network.ServerSidePacketRegistry;
 import net.minecraft.client.network.ClientPlayerInteractionManager;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
@@ -32,9 +31,8 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Hand;
 import net.minecraft.util.Identifier;
 import net.minecraft.world.World;
-import zone.rong.dexterity.rpg.skill.types.Skill;
-import zone.rong.dexterity.rpg.skill.common.api.SkillHandler;
 import zone.rong.dexterity.rpg.skill.perk.api.InteractionTrigger;
+import zone.rong.dexterity.rpg.skill.types.Skill;
 
 import java.util.function.BiPredicate;
 
@@ -47,6 +45,7 @@ import java.util.function.BiPredicate;
  * Primarily used for Unarmed perks -> alchemy and other things that do not reply on item tools may need it.
  * We could also make these 'passive' perks.
  */
+@Deprecated
 public class EmptyHandPerk extends Perk {
 
     public static final Identifier PACKET = new Identifier("dexterity", "empty_hand_interact");
@@ -57,7 +56,7 @@ public class EmptyHandPerk extends Perk {
 
     @Override
     public void registerExtra() {
-        super.registerExtra();
+        // super.registerExtra();
         // ServerSidePacketRegistry.INSTANCE.register(PACKET, (ctx, packet) -> ctx.getTaskQueue().execute(() -> ((SkillHandler) ctx.getPlayer()).getPerkManager().readyUp(ItemStack.EMPTY)));
     }
 
