@@ -41,6 +41,8 @@ import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.Type;
 import org.objectweb.asm.tree.AbstractInsnNode;
 import org.objectweb.asm.tree.ClassNode;
+import org.objectweb.asm.tree.JumpInsnNode;
+import org.objectweb.asm.tree.LabelNode;
 import org.objectweb.asm.tree.MethodInsnNode;
 import org.objectweb.asm.tree.MethodNode;
 import org.objectweb.asm.tree.VarInsnNode;
@@ -57,6 +59,7 @@ import java.util.stream.Stream;
  * 1a. Handles keybind while loops
  * 2a. Handles Mining trait - Double Drops
  * 2b. Handles Mining Perk - Super Breaker: Triple Drops
+ * 3.  BrewingStandBlockEntity IFNE -> IFGT
  * {@link DexterityASM#modifyDrops(BlockState, LootContext.Builder, ServerWorld, BlockPos, Entity)}
  */
 public class DexterityASM implements Runnable {
@@ -68,6 +71,7 @@ public class DexterityASM implements Runnable {
     public void run() {
         ClassTinkerers.addTransformation(REMAPPER.mapClassName(INTERMEDIARY, "net.minecraft.client.MinecraftClient"), this::transformMinecraftClient);
         ClassTinkerers.addTransformation(REMAPPER.mapClassName(INTERMEDIARY, "net.minecraft.block.Block"), this::transformBlock);
+        ClassTinkerers.addTransformation(REMAPPER.mapClassName(INTERMEDIARY, "net.minecraft.block.entity.BrewingStandBlockEntity"), this::transformBrewingStandBlockEntity);
     }
 
     private void transformMinecraftClient(ClassNode classNode) {
@@ -104,6 +108,20 @@ public class DexterityASM implements Runnable {
                             m.instructions.insertBefore(i, new VarInsnNode(Opcodes.ALOAD, 2)); // Load BlockPos reference
                             m.instructions.insertBefore(i, new VarInsnNode(Opcodes.ALOAD, 4)); // Load Entity reference
                             m.instructions.insertBefore(i, new MethodInsnNode(Opcodes.INVOKESTATIC, Type.getInternalName(this.getClass()), "modifyDrops", "(Lnet/minecraft/block/BlockState;Lnet/minecraft/loot/context/LootContext$Builder;Lnet/minecraft/server/world/ServerWorld;Lnet/minecraft/util/math/BlockPos;Lnet/minecraft/entity/Entity;)Ljava/util/List;"));
+                        }));
+    }
+
+    private void transformBrewingStandBlockEntity(ClassNode classNode) {
+        final String tick = REMAPPER.mapMethodName(INTERMEDIARY, "net.minecraft.block.entity.BrewingStandBlockEntity", "tick", "(Lnet/minecraft/block/entity/BrewingStandBlockEntity;tick()V");
+        classNode.methods.stream()
+                .filter(m -> m.name.equals(tick))
+                .findFirst()
+                .ifPresent(m -> Streams.stream(m.instructions)
+                        .filter(i -> i.getOpcode() == Opcodes.IFNE)
+                        .findFirst()
+                        .ifPresent(i -> {
+                            m.instructions.insertBefore(i, new JumpInsnNode(Opcodes.IFGT, ((JumpInsnNode) i).label));
+                            m.instructions.remove(i);
                         }));
     }
 

@@ -33,7 +33,7 @@ public class LandDeedItem extends Item {
 
     public final Identifier identifier = new Identifier("dexterity", "land_deed");
 
-    public LandDeedItem() {
+    private LandDeedItem() {
         super(new Settings().fireproof().maxCount(1));
     }
 
