@@ -82,7 +82,7 @@ public interface XPStore {
     }
 
     default void addXp(Skill skill, int xp) {
-        PlayerEntity player = ((BlockEntity) this).getWorld().getServer().getPlayerManager().getPlayer(getLastUUID());
+        PlayerEntity player = getPlayer();
         if (player == null) {
             getLocalXpStore().putIfAbsent(getLastUUID(), new Int2IntOpenHashMap());
             getLocalXpStore().get(getLastUUID()).putIfAbsent(DexterityData.SKILLS.getRawId(skill), xp);
@@ -101,5 +101,15 @@ public interface XPStore {
     UUID getLastUUID();
 
     Object2ObjectMap<UUID, Int2IntMap> getLocalXpStore();
+
+    default PlayerEntity getPlayer() {
+        UUID uuid = getLastUUID();
+        return uuid != null ? ((BlockEntity) this).getWorld().getServer().getPlayerManager().getPlayer(uuid) : null;
+    }
+
+    default int getLevel(Skill<?> skill) {
+        PlayerEntity player = getPlayer();
+        return player == null ? 0 : ((SkillHandler) player).getSkillManager().getLevel(skill);
+    }
 
 }

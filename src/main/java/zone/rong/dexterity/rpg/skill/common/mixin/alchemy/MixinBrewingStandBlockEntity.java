@@ -31,19 +31,15 @@ import net.minecraft.block.entity.LockableContainerBlockEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.util.collection.DefaultedList;
-import org.objectweb.asm.Opcodes;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Constant;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.ModifyConstant;
-import org.spongepowered.asm.mixin.injection.ModifyVariable;
 import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
-import zone.rong.dexterity.DexterityData;
 import zone.rong.dexterity.api.DexterityNBT;
 import zone.rong.dexterity.api.DexteritySkills;
 import zone.rong.dexterity.rpg.skill.common.api.XPStore;
@@ -57,25 +53,23 @@ public abstract class MixinBrewingStandBlockEntity extends LockableContainerBloc
     @Unique private UUID playerUuid;
     @Unique private Object2ObjectMap<UUID, Int2IntMap> xpStore;
 
-    @Shadow private int brewTime;
-
     protected MixinBrewingStandBlockEntity() {
         super(null);
     }
 
     @ModifyConstant(method = "tick", constant = @Constant(intValue = 20))
     private int modifyFuel(int fuel) {
-        return playerUuid == null ? fuel : fuel + 5; // Temp
+        return playerUuid == null ? fuel : 20 - getLevel(DexteritySkills.ALCHEMY) / 75; // Lvl1000 = Max 13 fuel
     }
 
     @ModifyConstant(method = "tick", constant = @Constant(intValue = 1, ordinal = 2))
     private int modifyBrewTime(int decrement) {
-        return playerUuid == null ? decrement : decrement + 9; // Temp
+        return playerUuid == null ? decrement : Math.max(1, getLevel(DexteritySkills.ALCHEMY) / 25); // Lvl1000 = Max 40 decrement each time (10 ticks per operation)
     }
 
     @Redirect(method = "craft", at = @At(value = "INVOKE", target = "Lnet/minecraft/util/collection/DefaultedList;set(ILjava/lang/Object;)Ljava/lang/Object;"))
     private Object addSkill(DefaultedList<Object> inventory, int index, Object stack) {
-        addXp(DexteritySkills.ALCHEMY, 5);
+        addXp(DexteritySkills.ALCHEMY, 100);
         return inventory.set(index, stack);
     }
 

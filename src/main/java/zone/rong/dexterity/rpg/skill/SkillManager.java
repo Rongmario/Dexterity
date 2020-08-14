@@ -90,6 +90,10 @@ public class SkillManager {
         this.containers.get(skill).addXp(xp);
     }
 
+    public int getLevel(Skill<?> skill) {
+        return getSkillEntry(skill).getLevel();
+    }
+
     public SkillEntry getSkillEntry(Skill<?> skill) {
         return this.containers.get(skill);
     }
