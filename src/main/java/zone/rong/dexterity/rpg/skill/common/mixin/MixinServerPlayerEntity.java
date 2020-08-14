@@ -24,8 +24,6 @@
 package zone.rong.dexterity.rpg.skill.common.mixin;
 
 import com.mojang.authlib.GameProfile;
-import net.minecraft.entity.ItemEntity;
-import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -38,7 +36,6 @@ import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import zone.rong.dexterity.DexterityData;
 import zone.rong.dexterity.api.event.ServerPlayerConstructedEvent;
 import zone.rong.dexterity.rpg.skill.perk.PerkManager;
@@ -83,13 +80,6 @@ public abstract class MixinServerPlayerEntity implements SkillHandler, Nutrition
     private void serializeManagers(CompoundTag tag, CallbackInfo ci) {
         this.skillManager.serialize(tag);
         this.nutritionManager.serialize(tag);
-    }
-
-    @Inject(method = "dropItem", at = @At("HEAD"))
-    private void removeActiveTagsOnDropItem(ItemStack stack, boolean throwRandomly, boolean retainOwnership, CallbackInfoReturnable<ItemEntity> cir) {
-        if (perkManager.isPerkActive(stack)) {
-            perkManager.endPerk();
-        }
     }
 
     @Override

@@ -1,4 +1,7 @@
 {
+    "key.dexterity.category": "Dexterity",
+    "key.dexterity.open_skill_menu": "Open Skill Menu",
+    "key.dexterity.ready_up": "Ready Up",
     "skills.dexterity.mining": "Mining",
     "skills.dexterity.excavation": "Excavation",
     "skills.dexterity.swordsmanship": "Swordsmanship",

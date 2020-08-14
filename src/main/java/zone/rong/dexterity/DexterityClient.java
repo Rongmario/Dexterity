@@ -35,13 +35,14 @@ import zone.rong.dexterity.rpg.skill.client.api.HudRender;
 @Environment(EnvType.CLIENT)
 public class DexterityClient implements ClientModInitializer {
 
-    // TODO: make the keybind customizable
-    public static final KeyBinding SKILL_MENU = new KeyBinding("key.dexterity.open_skill_menu", 'F', "key.dexterity.category");
+    public static final KeyBinding SKILL_MENU = new KeyBinding("key.dexterity.open_skill_menu", 'X', "key.dexterity.category");
+    public static final KeyBinding READY_UP = new KeyBinding("key.dexterity.ready_up", 'V', "key.dexterity.category");
 
     @Override
     public void onInitializeClient() {
         DexterityPackets.registerS2CPackets();
         KeyBindingHelper.registerKeyBinding(SKILL_MENU);
+        KeyBindingHelper.registerKeyBinding(READY_UP);
         HudRenderCallback.EVENT.register((stack, delta) -> HudRender.queue.forEach(h -> h.render(stack, delta)));
     }
 

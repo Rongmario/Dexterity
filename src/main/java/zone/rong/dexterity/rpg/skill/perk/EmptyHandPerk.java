@@ -47,18 +47,18 @@ import java.util.function.BiPredicate;
  * Primarily used for Unarmed perks -> alchemy and other things that do not reply on item tools may need it.
  * We could also make these 'passive' perks.
  */
-public class EmptyHandPerk extends BasePerk {
+public class EmptyHandPerk extends Perk {
 
     public static final Identifier PACKET = new Identifier("dexterity", "empty_hand_interact");
 
-    EmptyHandPerk(String name, Skill<?> parentSkill, Int2IntFunction cooldown, Int2IntFunction duration, InteractionTrigger trigger, BiPredicate<ServerPlayerEntity, ItemStack> readyCondition, PerkStart startAction, PerkEnd endAction) {
-        super(name, parentSkill, cooldown, duration, readyCondition, trigger, startAction, endAction);
+    EmptyHandPerk(String namespace, String path, Skill<?> parentSkill, Int2IntFunction cooldown, Int2IntFunction duration, BiPredicate<ServerPlayerEntity, ItemStack> readyCondition, InteractionTrigger trigger, PerkStart startAction, PerkEnd endAction) {
+        super(namespace, path, parentSkill, cooldown, duration, readyCondition, trigger, startAction, endAction);
     }
 
     @Override
     public void registerExtra() {
         super.registerExtra();
-        ServerSidePacketRegistry.INSTANCE.register(PACKET, (ctx, packet) -> ctx.getTaskQueue().execute(() -> ((SkillHandler) ctx.getPlayer()).getPerkManager().readyUp(this)));
+        // ServerSidePacketRegistry.INSTANCE.register(PACKET, (ctx, packet) -> ctx.getTaskQueue().execute(() -> ((SkillHandler) ctx.getPlayer()).getPerkManager().readyUp(ItemStack.EMPTY)));
     }
 
 }

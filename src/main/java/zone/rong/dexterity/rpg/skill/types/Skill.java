@@ -35,7 +35,7 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
 import zone.rong.dexterity.DexterityData;
 import zone.rong.dexterity.api.Unlockable;
-import zone.rong.dexterity.rpg.skill.perk.BasePerk;
+import zone.rong.dexterity.rpg.skill.perk.Perk;
 import zone.rong.dexterity.rpg.skill.perk.PerkBuilder;
 import zone.rong.dexterity.rpg.skill.trait.BaseTrait;
 import zone.rong.dexterity.rpg.skill.trait.ModifyPlayerTrait;
@@ -54,7 +54,7 @@ public class Skill<S extends Skill<S>> implements Comparable<S>, Unlockable {
     private final TextColor colourObject;
     private final int colour;
 
-    private final Set<BasePerk> perkLookup = new ObjectOpenHashSet<>();
+    private final Set<Perk> perkLookup = new ObjectOpenHashSet<>();
     private final Set<Trait> traitLookup = new ObjectOpenHashSet<>();
 
     public Skill(String path, ItemConvertible displayItem, int colour) {
@@ -74,13 +74,13 @@ public class Skill<S extends Skill<S>> implements Comparable<S>, Unlockable {
         Registry.register(DexterityData.SKILLS, identifier, this);
     }
 
-    public S addPerk(BiFunction<Skill<S>, PerkBuilder<?>, BasePerk> perkApplyFunction) {
-        BasePerk perk = perkApplyFunction.apply(this, PerkBuilder.of());
+    public S addPerk(BiFunction<Skill<S>, PerkBuilder<?>, Perk> perkApplyFunction) {
+        Perk perk = perkApplyFunction.apply(this, PerkBuilder.of());
         this.perkLookup.add(perk);
         return self();
     }
 
-    public S addPerk(BasePerk perk) {
+    public S addPerk(Perk perk) {
         this.perkLookup.add(perk);
         return self();
     }
@@ -131,7 +131,7 @@ public class Skill<S extends Skill<S>> implements Comparable<S>, Unlockable {
         return description;
     }
 
-    public Set<BasePerk> getPerks() {
+    public Set<Perk> getPerks() {
         return perkLookup;
     }
 

@@ -50,6 +50,7 @@ import java.util.Collection;
 public class DexterityPackets {
 
     public static final Identifier C2S_SKILLS_QUERY = new Identifier("dexterity", "c2s_skills_query");
+    public static final Identifier C2S_READY_UP = new Identifier("dexterity", "c2s_ready_up");
 
     public static final Identifier S2C_SKILLS_RESPONSE = new Identifier("dexterity", "c2s_skills_response");
     public static final Identifier S2C_SKILL_UNLOCKED = new Identifier("dexterity", "s2c_skill_unlocked");
@@ -62,6 +63,9 @@ public class DexterityPackets {
             ServerPlayerEntity player = (ServerPlayerEntity) ctx.getPlayer();
             PacketByteBuf responsePacket = writePacket(((SkillHandler) player).getSkillManager().getSkillEntries());
             ServerSidePacketRegistry.INSTANCE.sendToPlayer(player, S2C_SKILLS_RESPONSE, responsePacket);
+        }));
+        ServerSidePacketRegistry.INSTANCE.register(C2S_READY_UP, (ctx, packet) -> ctx.getTaskQueue().execute(() -> {
+            ((SkillHandler) ctx.getPlayer()).getPerkManager().readyUp(ctx.getPlayer().getMainHandStack());
         }));
     }
 

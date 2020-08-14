@@ -30,6 +30,7 @@ import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
+import zone.rong.dexterity.DexterityHelper;
 
 @Mixin(ItemStack.class)
 public class MixinItemStack {
@@ -38,7 +39,7 @@ public class MixinItemStack {
 
     @Inject(method = "hasGlint", at = @At("RETURN"), cancellable = true)
     private void extraHasGlintCheck(CallbackInfoReturnable<Boolean> cir) {
-        cir.setReturnValue(cir.getReturnValueZ() || (tag != null && tag.contains("DexterityGlint") && tag.getBoolean("DexterityGlint")));
+        cir.setReturnValue(cir.getReturnValueZ() || (tag != null && tag.contains(DexterityHelper.DEXTERITY_GLINT_TAG)));
     }
 
 }

@@ -24,10 +24,6 @@
 package zone.rong.dexterity.rpg.skill.perk;
 
 import net.fabricmc.fabric.api.event.player.AttackBlockCallback;
-import net.fabricmc.fabric.api.event.player.AttackEntityCallback;
-import net.fabricmc.fabric.api.event.player.UseBlockCallback;
-import net.fabricmc.fabric.api.event.player.UseEntityCallback;
-import net.fabricmc.fabric.api.event.player.UseItemCallback;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -39,13 +35,15 @@ import net.minecraft.text.TranslatableText;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Hand;
+import net.minecraft.util.Identifier;
 import net.minecraft.util.TypedActionResult;
 import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
+import net.minecraft.util.registry.Registry;
 import net.minecraft.world.World;
-import zone.rong.dexterity.api.event.ServerBlockBreakEvent;
-import zone.rong.dexterity.rpg.skill.perk.api.Perk;
+import zone.rong.dexterity.DexterityData;
+import zone.rong.dexterity.api.Unlockable;
 import zone.rong.dexterity.rpg.skill.types.Skill;
 import zone.rong.dexterity.rpg.skill.common.api.SkillHandler;
 import zone.rong.dexterity.rpg.skill.perk.api.InteractionTrigger;
@@ -53,9 +51,10 @@ import zone.rong.dexterity.rpg.skill.perk.api.InteractionTrigger;
 import java.util.function.BiPredicate;
 import java.util.function.IntUnaryOperator;
 
-public class BasePerk implements Perk {
+public class Perk implements Unlockable {
 
-    protected final String name;
+    protected final String namespace, path;
+    protected final Identifier identifier;
     protected final MutableText displayName;
     protected final Skill<?> parentSkill;
     protected final IntUnaryOperator levelApplyToCooldown, levelApplyToDuration;
@@ -64,9 +63,11 @@ public class BasePerk implements Perk {
     protected final PerkStart actionStart;
     protected final PerkEnd actionEnd;
 
-    public BasePerk(String name, Skill<?> parentSkill, IntUnaryOperator cooldown, IntUnaryOperator duration, BiPredicate<ServerPlayerEntity, ItemStack> readyCondition, InteractionTrigger trigger, PerkStart start, PerkEnd end) {
-        this.name = name;
-        this.displayName = new TranslatableText("perk.dexterity.".concat(name));
+    Perk(String namespace, String path, Skill<?> parentSkill, IntUnaryOperator cooldown, IntUnaryOperator duration, BiPredicate<ServerPlayerEntity, ItemStack> readyCondition, InteractionTrigger trigger, PerkStart start, PerkEnd end) {
+        this.namespace = namespace;
+        this.path = path;
+        this.identifier = new Identifier(namespace, path);
+        this.displayName = new TranslatableText("perk.dexterity.".concat(path));
         this.parentSkill = parentSkill;
         this.levelApplyToCooldown = cooldown;
         this.levelApplyToDuration = duration;
@@ -74,11 +75,12 @@ public class BasePerk implements Perk {
         this.trigger = trigger;
         this.actionStart = start;
         this.actionEnd = end;
+        Registry.register(DexterityData.PERKS, identifier, this);
     }
 
     @Override
     public String toString() {
-        return name;
+        return identifier.toString();
     }
 
     @Override
@@ -96,7 +98,6 @@ public class BasePerk implements Perk {
         return parentSkill.getDisplayItem();
     }
 
-    @Override
     public Skill<?> getParentSkill() {
         return parentSkill;
     }
@@ -126,6 +127,8 @@ public class BasePerk implements Perk {
     }
 
     public void registerExtra() {
+        AttackBlockCallback.EVENT.register(this::setPerkActive);
+        /*
         switch (trigger) {
             case NONE:
                 break;
@@ -148,41 +151,47 @@ public class BasePerk implements Perk {
                 UseItemCallback.EVENT.register(this::setPerkActiveTyped);
                 break;
         }
+         */
     }
 
     private ActionResult setPerkActive(PlayerEntity player, World world, Hand hand, HitResult result) {
         if (world.isClient) {
             return ActionResult.PASS;
         }
-        return ((SkillHandler) player).getPerkManager().setPerkActive(this);
+        // return ((SkillHandler) player).getPerkManager().setPerkActive(this);
+        return ((SkillHandler) player).getPerkManager().setPerkActive();
     }
 
     private ActionResult setPerkActive(PlayerEntity player, World world, Hand hand, BlockPos pos, BlockState state) {
         if (world.isClient) {
             return ActionResult.PASS;
         }
-        return ((SkillHandler) player).getPerkManager().setPerkActive(this);
+        // return ((SkillHandler) player).getPerkManager().setPerkActive(this);
+        return ((SkillHandler) player).getPerkManager().setPerkActive();
     }
 
     private ActionResult setPerkActive(PlayerEntity player, World world, Hand hand, BlockPos pos, Direction direction) {
         if (world.isClient) {
             return ActionResult.PASS;
         }
-        return ((SkillHandler) player).getPerkManager().setPerkActive(this);
+        // return ((SkillHandler) player).getPerkManager().setPerkActive(this);
+        return ((SkillHandler) player).getPerkManager().setPerkActive();
     }
 
     private ActionResult setPerkActive(PlayerEntity player, World world, Hand hand, Entity entity, HitResult result) {
         if (world.isClient) {
             return ActionResult.PASS;
         }
-        return ((SkillHandler) player).getPerkManager().setPerkActive(this);
+        // return ((SkillHandler) player).getPerkManager().setPerkActive(this);
+        return ((SkillHandler) player).getPerkManager().setPerkActive();
     }
 
     private TypedActionResult<ItemStack> setPerkActiveTyped(PlayerEntity player, World world, Hand hand) {
         if (world.isClient) {
             return TypedActionResult.pass(player.getMainHandStack());
         }
-        return new TypedActionResult<>(((SkillHandler) player).getPerkManager().setPerkActive(this), player.getMainHandStack());
+        // return new TypedActionResult<>(((SkillHandler) player).getPerkManager().setPerkActive(this), player.getMainHandStack());
+        return new TypedActionResult<>(((SkillHandler) player).getPerkManager().setPerkActive(), player.getMainHandStack());
     }
 
     @FunctionalInterface
@@ -190,7 +199,7 @@ public class BasePerk implements Perk {
 
         ActionResult start(PlayerEntity player, World world, ItemStack stack);
 
-        default ActionResult callStart(BasePerk perk, PlayerEntity player, World world, ItemStack stack) {
+        default ActionResult callStart(Perk perk, PlayerEntity player, World world, ItemStack stack) {
             player.sendMessage(new LiteralText("||<- ").append(perk.displayName.shallowCopy().formatted(Formatting.BOLD, Formatting.BLUE)).append(new LiteralText(" ->||")), true);
             return start(player, world, stack);
         }
@@ -202,7 +211,7 @@ public class BasePerk implements Perk {
 
         void end(PlayerEntity player, World world, ItemStack stack);
 
-        default void callEnd(BasePerk perk, PlayerEntity player, World world, ItemStack stack) {
+        default void callEnd(Perk perk, PlayerEntity player, World world, ItemStack stack) {
             player.sendMessage(perk.getName().shallowCopy().append(new TranslatableText("message.dexterity.perk.diminish")).formatted(Formatting.AQUA), true);
             end(player, world, stack);
         }

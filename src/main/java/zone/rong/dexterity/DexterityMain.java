@@ -29,7 +29,7 @@ import org.apache.logging.log4j.Logger;
 import zone.rong.dexterity.api.DexterityEntityAttributes;
 import zone.rong.dexterity.api.DexterityPackets;
 import zone.rong.dexterity.api.DexteritySkills;
-import zone.rong.dexterity.rpg.skill.perk.BasePerk;
+import zone.rong.dexterity.rpg.skill.perk.Perk;
 import zone.rong.dexterity.rpg.skill.types.Skill;
 
 import static zone.rong.dexterity.DexterityData.*;
@@ -44,7 +44,7 @@ public class DexterityMain implements ModInitializer {
         DexteritySkills.init();
         DexterityEntityAttributes.init();
         DexterityPackets.registerC2SPackets();
-        SKILLS.stream().map(Skill::getPerks).forEach(perks -> perks.forEach(BasePerk::registerExtra));
+        SKILLS.stream().map(Skill::getPerks).forEach(perks -> perks.forEach(Perk::registerExtra));
     }
 
 }

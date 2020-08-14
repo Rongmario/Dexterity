@@ -32,15 +32,15 @@ import zone.rong.dexterity.rpg.skill.types.Skill;
 import java.util.function.BiPredicate;
 import java.util.function.Predicate;
 
-public class PerkBuilder<P extends BasePerk> {
+public class PerkBuilder<P extends Perk> {
 
     protected boolean useHand = false;
     protected InteractionTrigger trigger;
     protected BiPredicate<ServerPlayerEntity, ItemStack> readyCondition;
-    protected BasePerk.PerkStart actionStart;
-    protected BasePerk.PerkEnd actionEnd;
+    protected Perk.PerkStart actionStart;
+    protected Perk.PerkEnd actionEnd;
 
-    public static <P extends BasePerk> PerkBuilder<P> of() {
+    public static <P extends Perk> PerkBuilder<P> of() {
         return new PerkBuilder<>();
     }
 
@@ -64,22 +64,22 @@ public class PerkBuilder<P extends BasePerk> {
         return this;
     }
 
-    public PerkBuilder<P> start(BasePerk.PerkStart start) {
+    public PerkBuilder<P> start(Perk.PerkStart start) {
         this.actionStart = start;
         return this;
     }
 
-    public PerkBuilder<P> end(BasePerk.PerkEnd end) {
+    public PerkBuilder<P> end(Perk.PerkEnd end) {
         this.actionEnd = end;
         return this;
     }
 
     @SuppressWarnings("unchecked")
-    public P build(String name, Skill parentSkill, Int2IntFunction cooldown, Int2IntFunction duration) {
+    public P build(String namespace, String path, Skill parentSkill, Int2IntFunction cooldown, Int2IntFunction duration) {
         if (useHand) {
-            return (P) new EmptyHandPerk(name, parentSkill, cooldown, duration, trigger, readyCondition, actionStart, actionEnd);
+            return (P) new EmptyHandPerk(namespace, path, parentSkill, cooldown, duration, readyCondition, trigger, actionStart, actionEnd);
         }
-        return (P) new GenericPerk(name, parentSkill, cooldown, duration, trigger, readyCondition, actionStart, actionEnd);
+        return (P) new Perk(namespace, path, parentSkill, cooldown, duration, readyCondition, trigger, actionStart, actionEnd);
     }
 
 }

@@ -28,7 +28,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.collection.DefaultedList;
 import zone.rong.dexterity.api.DexterityEntityAttributes;
-import zone.rong.dexterity.rpg.skill.perk.GenericPerk;
+import zone.rong.dexterity.rpg.skill.perk.Perk;
 import zone.rong.dexterity.rpg.skill.perk.PerkBuilder;
 import zone.rong.dexterity.rpg.skill.perk.api.InteractionTrigger;
 import zone.rong.dexterity.rpg.skill.types.AbstractToolSkill;
@@ -45,17 +45,17 @@ public class DexterityHelper {
     public static final String DEXTERITY_PLAYER_SKILLS_TOTAL_XP = "TotalXp";
     public static final String DEXTERITY_PLAYER_SKILLS_TOTAL_LEVELS = "Levels";
 
-    public static GenericPerk getGenericBlockBreakPerk(String name, AbstractToolSkill<?, ?> skill) {
-        return PerkBuilder.<GenericPerk>of()
+    public static Perk getGenericBlockBreakPerk(String namespace, String path, AbstractToolSkill<?, ?> skill) {
+        return PerkBuilder.of()
                 .readyCondition((playerEntity, stack) -> skill.isToolCompatible(stack))
-                .perkTrigger(InteractionTrigger.BREAK_BLOCK)
+                .perkTrigger(InteractionTrigger.ATTACK_BLOCK)
                 .start((player, world, stack) -> {
                     float speed = ((SkillHandler) player).getSkillManager().getSkillEntry(skill).getLevel() >= 50 ? 0.8F : 0.6F;
                     player.getAttributeInstance(DexterityEntityAttributes.MINING_SPEED_PERK).addTemporaryModifier(new EntityAttributeModifier(DexterityEntityAttributes.MINING_SPEED_PERK_UUID, "Bonus Dexterity Mining Speed", speed, EntityAttributeModifier.Operation.ADDITION));
-                    return ActionResult.PASS;
+                    return ActionResult.FAIL;
                 })
                 .end((player, world, stack) -> player.getAttributeInstance(DexterityEntityAttributes.MINING_SPEED_PERK).removeModifier(DexterityEntityAttributes.MINING_SPEED_PERK_UUID))
-                .build(name, skill, level -> 200, level -> 20 + (level * 4));
+                .build(namespace, path, skill, level -> 200, level -> 20 + (level * 4));
     }
 
     // TODO: setup ItemStackWrapper to cast list -> set to find 'unique' stacks

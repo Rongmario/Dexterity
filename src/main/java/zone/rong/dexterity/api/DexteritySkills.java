@@ -35,7 +35,7 @@ import net.minecraft.tag.BlockTags;
 import net.minecraft.util.ActionResult;
 import zone.rong.dexterity.DexterityHelper;
 import zone.rong.dexterity.rpg.skill.perk.EmptyHandPerk;
-import zone.rong.dexterity.rpg.skill.perk.GenericPerk;
+import zone.rong.dexterity.rpg.skill.perk.Perk;
 import zone.rong.dexterity.rpg.skill.perk.PerkBuilder;
 import zone.rong.dexterity.rpg.skill.perk.api.InteractionTrigger;
 import zone.rong.dexterity.rpg.skill.types.CombatSkill;
@@ -62,19 +62,19 @@ public class DexteritySkills {
     public static final Skill<?> ACROBATICS = new Skill<>("acrobatics", Items.ELYTRA, 2599896);
 
     // Perks
-    public static final GenericPerk QUICK_FIRE = PerkBuilder.<GenericPerk>of()
+    public static final Perk QUICK_FIRE = PerkBuilder.of()
             .readyCondition((player, stack) -> ARCHERY.isToolCompatible(stack))
             .start((player, world, stack) -> {
                 stack.getTag().putBoolean(DexterityNBT.Skills.RANGED_QUICK_FIRE, true);
                 return ActionResult.PASS;
             })
             .end(((player, world, stack) -> stack.getTag().remove(DexterityNBT.Skills.RANGED_QUICK_FIRE)))
-            .perkTrigger(InteractionTrigger.IMMEDIATE)
-            .build("quick_fire", ARCHERY, s -> 200, s -> Math.max(100, Math.floorDiv(s, 32)));
+            .perkTrigger(InteractionTrigger.USE_ITEM)
+            .build("dexterity", "quick_fire", ARCHERY, s -> 200, s -> Math.max(100, Math.floorDiv(s, 32)));
 
-    public static final GenericPerk SUPER_BREAK = DexterityHelper.getGenericBlockBreakPerk("super_breaker", MINING);
+    public static final Perk SUPER_BREAK = DexterityHelper.getGenericBlockBreakPerk("dexterity", "super_breaker", MINING);
 
-    public static final GenericPerk GIGA_DRILL_BREAK = DexterityHelper.getGenericBlockBreakPerk("giga_drill_break", EXCAVATION);
+    public static final Perk GIGA_DRILL_BREAK = DexterityHelper.getGenericBlockBreakPerk("dexterity", "giga_drill_break", EXCAVATION);
 
     public static final EmptyHandPerk BERSERK = PerkBuilder.<EmptyHandPerk>of()
             .readyCondition((player, stack) -> stack.isEmpty())
@@ -86,7 +86,7 @@ public class DexteritySkills {
             .end((player, world, stack) -> player.getAttributeInstance(EntityAttributes.GENERIC_ATTACK_DAMAGE).removeModifier(DexterityEntityAttributes.DAMAGE_AMOUNT_PERK_UUID))
             .useHand()
             .perkTrigger(InteractionTrigger.ATTACK_ENTITY)
-            .build("berserk", UNARMED, s -> 200, s -> 100);
+            .build("dexterity", "berserk", UNARMED, s -> 200, s -> 100);
 
     public static void init() {
         initAcrobatics();

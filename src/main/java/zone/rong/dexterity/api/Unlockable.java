@@ -26,6 +26,7 @@ package zone.rong.dexterity.api;
 import net.minecraft.item.ItemStack;
 import net.minecraft.text.MutableText;
 
+// TODO: namespace - path
 public interface Unlockable {
 
     MutableText getName();

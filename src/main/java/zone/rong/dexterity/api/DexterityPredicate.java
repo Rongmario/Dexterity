@@ -26,18 +26,15 @@ package zone.rong.dexterity.api;
 import net.minecraft.entity.Entity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Vec3d;
-import zone.rong.dexterity.rpg.skill.perk.BasePerk;
-import zone.rong.dexterity.rpg.skill.common.api.ServerWorldArtificialBlockStatesHandler;
+import zone.rong.dexterity.rpg.skill.perk.Perk;
 import zone.rong.dexterity.rpg.skill.common.api.SkillHandler;
 
 public class DexterityPredicate {
 
-    private final BasePerk perk;
+    private final Perk perk;
     private final boolean hasToBeNatural;
 
-    private DexterityPredicate(BasePerk perk, boolean hasToBeNatural) {
+    private DexterityPredicate(Perk perk, boolean hasToBeNatural) {
         this.perk = perk;
         this.hasToBeNatural = hasToBeNatural;
     }
@@ -59,10 +56,10 @@ public class DexterityPredicate {
 
     public static class Builder {
 
-        private BasePerk perk = null;
+        private Perk perk = null;
         private boolean hasToBeNatural = false;
 
-        public Builder perk(BasePerk perk) {
+        public Builder perk(Perk perk) {
             this.perk = perk;
             return this;
         }
