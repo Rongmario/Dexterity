@@ -32,7 +32,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Util;
 import zone.rong.dexterity.DexterityData;
-import zone.rong.dexterity.DexterityHelper;
+import zone.rong.dexterity.api.DexterityHelper;
 import zone.rong.dexterity.rpg.skill.types.CombatSkill;
 import zone.rong.dexterity.rpg.skill.types.DigSkill;
 import zone.rong.dexterity.rpg.skill.types.Skill;

@@ -37,7 +37,7 @@ import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-import zone.rong.dexterity.DexterityHelper;
+import zone.rong.dexterity.api.DexterityHelper;
 import zone.rong.dexterity.api.DexteritySkills;
 import zone.rong.dexterity.rpg.skill.SkillManager;
 import zone.rong.dexterity.rpg.skill.common.api.SkillHandler;

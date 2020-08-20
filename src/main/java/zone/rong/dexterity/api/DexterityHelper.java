@@ -21,18 +21,24 @@
  *   WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package zone.rong.dexterity;
+package zone.rong.dexterity.api;
 
+import io.netty.buffer.Unpooled;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
+import net.fabricmc.fabric.api.network.ClientSidePacketRegistry;
 import net.minecraft.entity.attribute.EntityAttributeModifier;
 import net.minecraft.item.ItemStack;
+import net.minecraft.network.PacketByteBuf;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.collection.DefaultedList;
-import zone.rong.dexterity.api.DexterityEntityAttributes;
+import zone.rong.dexterity.DexterityData;
 import zone.rong.dexterity.rpg.skill.perk.Perk;
 import zone.rong.dexterity.rpg.skill.perk.PerkBuilder;
 import zone.rong.dexterity.rpg.skill.perk.api.InteractionTrigger;
 import zone.rong.dexterity.rpg.skill.types.AbstractToolSkill;
 import zone.rong.dexterity.rpg.skill.common.api.SkillHandler;
+import zone.rong.dexterity.rpg.skill.types.Skill;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -44,6 +50,15 @@ public class DexterityHelper {
     public static final String DEXTERITY_PLAYER_SKILLS_CURRENT_XP = "CurrentXp";
     public static final String DEXTERITY_PLAYER_SKILLS_TOTAL_XP = "TotalXp";
     public static final String DEXTERITY_PLAYER_SKILLS_TOTAL_LEVELS = "Levels";
+
+    /*
+    @Environment(EnvType.CLIENT)
+    public static int queryLevel(Skill<?> skill) {
+        PacketByteBuf packet = new PacketByteBuf(Unpooled.buffer());
+        packet.writeInt(DexterityData.SKILLS.getRawId(skill));
+        ClientSidePacketRegistry.INSTANCE.sendToServer(DexterityPackets.C2S_SKILL_LEVEL_QUERY, packet);
+    }
+     */
 
     public static Perk getGenericBlockBreakPerk(String namespace, String path, AbstractToolSkill<?, ?> skill) {
         return PerkBuilder.of()

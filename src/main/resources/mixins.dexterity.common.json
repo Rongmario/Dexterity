@@ -16,6 +16,7 @@
     "acrobatics.MixinServerPlayerInteractionManager",
     "alchemy.MixinBrewingStandBlock",
     "alchemy.MixinBrewingStandBlockEntity",
+    "MixinPlayerInventory",
     "archery.MixinBowItem",
     "combat.MixinLivingEntity",
     "crafting.AccessorCraftingInventory",

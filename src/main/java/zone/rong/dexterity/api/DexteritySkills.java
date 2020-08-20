@@ -33,8 +33,6 @@ import net.minecraft.item.Items;
 import net.minecraft.item.RangedWeaponItem;
 import net.minecraft.tag.BlockTags;
 import net.minecraft.util.ActionResult;
-import zone.rong.dexterity.DexterityHelper;
-import zone.rong.dexterity.rpg.skill.perk.EmptyHandPerk;
 import zone.rong.dexterity.rpg.skill.perk.Perk;
 import zone.rong.dexterity.rpg.skill.perk.PerkBuilder;
 import zone.rong.dexterity.rpg.skill.perk.api.InteractionTrigger;

@@ -36,6 +36,7 @@ import net.minecraft.util.Identifier;
 import zone.rong.dexterity.DexterityData;
 import zone.rong.dexterity.rpg.skill.client.UnlockToast;
 import zone.rong.dexterity.rpg.skill.client.XpHud;
+import zone.rong.dexterity.rpg.skill.client.api.ClientSkillHandler;
 import zone.rong.dexterity.rpg.skill.client.api.HudRender;
 import zone.rong.dexterity.rpg.skill.types.Skill;
 import zone.rong.dexterity.rpg.skill.SkillEntry;
@@ -49,9 +50,11 @@ import java.util.Collection;
 
 public class DexterityPackets {
 
+    public static final Identifier C2S_SKILL_LEVEL_QUERY = new Identifier("dexterity", "c2s_skill_level_query");
     public static final Identifier C2S_SKILLS_QUERY = new Identifier("dexterity", "c2s_skills_query");
     public static final Identifier C2S_READY_UP = new Identifier("dexterity", "c2s_ready_up");
 
+    public static final Identifier S2C_SKILL_LEVEL_RESPONSE = new Identifier("dexterity", "c2s_skill_level_response");
     public static final Identifier S2C_SKILLS_RESPONSE = new Identifier("dexterity", "c2s_skills_response");
     public static final Identifier S2C_SKILL_UNLOCKED = new Identifier("dexterity", "s2c_skill_unlocked");
     public static final Identifier S2C_LEVEL_REACHED = new Identifier("dexterity", "s2c_level_reached");
@@ -59,6 +62,17 @@ public class DexterityPackets {
     public static final Identifier S2C_READY = new Identifier("dexterity", "s2c_ready");
 
     public static void registerC2SPackets() {
+        ServerSidePacketRegistry.INSTANCE.register(C2S_SKILL_LEVEL_QUERY, (ctx, packet) -> {
+            int rawSkill = packet.readInt();
+            Skill<?> skill = DexterityData.SKILLS.get(rawSkill);
+            ctx.getTaskQueue().execute(() -> {
+                ServerPlayerEntity player = (ServerPlayerEntity) ctx.getPlayer();
+                PacketByteBuf responsePacket = new PacketByteBuf(Unpooled.buffer());
+                responsePacket.writeInt(rawSkill);
+                responsePacket.writeInt(((SkillHandler) player).getSkillManager().getLevel(skill));
+                ServerSidePacketRegistry.INSTANCE.sendToPlayer(player, S2C_SKILL_LEVEL_RESPONSE, responsePacket);
+            });
+        });
         ServerSidePacketRegistry.INSTANCE.register(C2S_SKILLS_QUERY, (ctx, packet) -> ctx.getTaskQueue().execute(() -> {
             ServerPlayerEntity player = (ServerPlayerEntity) ctx.getPlayer();
             PacketByteBuf responsePacket = writePacket(((SkillHandler) player).getSkillManager().getSkillEntries());
@@ -71,6 +85,11 @@ public class DexterityPackets {
 
     @Environment(EnvType.CLIENT)
     public static void registerS2CPackets() {
+        ClientSidePacketRegistry.INSTANCE.register(S2C_SKILL_LEVEL_RESPONSE, (ctx, packet) -> {
+            Skill<?> skill = DexterityData.SKILLS.get(packet.readInt());
+            int level = packet.readInt();
+            ctx.getTaskQueue().execute(() -> ((ClientSkillHandler) ctx.getPlayer()).getSkillManager().setLevel(skill, level));
+        });
         ClientSidePacketRegistry.INSTANCE.register(S2C_LEVEL_REACHED, (ctx, packet) -> {
             Skill<?> skill = DexterityData.SKILLS.get(packet.readInt());
             int levelPriorToCheck = packet.readInt();

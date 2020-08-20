@@ -37,7 +37,7 @@ import net.minecraft.util.ActionResult;
 import net.minecraft.util.Clearable;
 import net.minecraft.util.Formatting;
 import zone.rong.dexterity.DexterityData;
-import zone.rong.dexterity.DexterityHelper;
+import zone.rong.dexterity.api.DexterityHelper;
 import zone.rong.dexterity.api.DexterityPackets;
 import zone.rong.dexterity.rpg.skill.SkillManager;
 
