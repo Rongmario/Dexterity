@@ -1,6 +1,7 @@
 {
-   "pack": {
-      "pack_format": 5,
-      "description": "Dexterity's Resource Pack"
-   }
+    "pack": {
+        "description": "Dexterity Resources",
+        "pack_format": 5,
+        "_comment": "Dexterity's Resources."
+    }
 }

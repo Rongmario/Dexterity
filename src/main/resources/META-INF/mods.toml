@@ -1,0 +1,19 @@
+modLoader = "javafml" #mandatory
+loaderVersion = "[31,)" #mandatory
+issueTrackerURL = "https://github.com/Rongmario/Dexterity/issues" #optional
+
+[[mods]]
+modId = "dexterity"
+version = "1.0"
+displayName = "Dexterity"
+displayURL = "http://rong.zone/"
+logoFile = "dexterity.png"
+authors = "Rongmario" #optional
+# The description text for the mod (multi line!) (#mandatory)
+description='''
+Dexterity.
+
+The ultimate immersive RPG mod for Minecraft 1.15.2+.
+
+For Forge. Fabric coming soon.
+'''

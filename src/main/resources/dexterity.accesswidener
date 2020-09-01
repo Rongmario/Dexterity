@@ -1,4 +1,0 @@
-accessWidener v1 named
-extendable class net/minecraft/item/ItemStack
-accessible method net/minecraft/world/PersistentStateManager getFile (Ljava/lang/String;)Ljava/io/File;
-accessible field net/minecraft/entity/Entity dimensions Lnet/minecraft/entity/EntityDimensions;

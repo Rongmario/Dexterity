@@ -1,9 +1,0 @@
-{
-  "required": true,
-  "package": "zone.rong.dexterity.mixin",
-  "compatibilityLevel": "JAVA_8",
-  "mixins": [
-    "AccessorLootTable",
-    "MixinServerPlayerInteractionManager"
-  ]
-}

@@ -1,19 +1,22 @@
-.gradle/6.5/
+# eclipse
+bin
+*.launch
+.settings
+.metadata
+.classpath
+.project
 
-.gradle/checksums/
+# idea
+out
+*.ipr
+*.iws
+*.iml
+.idea
 
-.gradle/buildOutputCleanup/
+# gradle
+build
+.gradle
 
-.gradle/loom-cache/
-
-.gradle/vcs-1/
-
-build/
-
-.idea/
-
-run/
-
-.gradle/
-
-logs/
+# other
+eclipse
+run
