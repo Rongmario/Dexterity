@@ -1,27 +1,30 @@
 package zone.rong.dexterity.api.capability;
 
-import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.nbt.INBT;
 import net.minecraft.util.Direction;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.world.World;
 import net.minecraftforge.common.capabilities.*;
 import net.minecraftforge.common.util.LazyOptional;
 import zone.rong.dexterity.Dexterity;
 import zone.rong.dexterity.api.DexterityAPI;
+import zone.rong.dexterity.api.capability.world.IArtificialBlocksStore;
 import zone.rong.dexterity.api.capability.skill.IGlintMarker;
 import zone.rong.dexterity.api.capability.skill.ISkillsHolder;
 import zone.rong.dexterity.api.skill.SkillType;
 import zone.rong.dexterity.skill.GlintMarker;
 import zone.rong.dexterity.skill.SkillContainer;
 import zone.rong.dexterity.skill.SkillsHolder;
+import zone.rong.dexterity.world.ArtificialBlocksStore;
 
 public final class DexterityCapabilities {
 
     public static final ResourceLocation SKILLS_HOLDER_ID = new ResourceLocation(Dexterity.MOD_ID, "skills_holder");
     public static final ResourceLocation GLINT_MARKER_ID = new ResourceLocation(Dexterity.MOD_ID, "glint_marker");
+    public static final ResourceLocation ARTIFICIAL_BLOCKS_STORE_ID = new ResourceLocation(Dexterity.MOD_ID, "artificial_blocks_store");
 
     @CapabilityInject(ISkillsHolder.class)
     public static final Capability<ISkillsHolder> SKILL_HOLDER;
@@ -29,17 +32,17 @@ public final class DexterityCapabilities {
     @CapabilityInject(IGlintMarker.class)
     public static final Capability<IGlintMarker> GLINT_MARKER;
 
+    @CapabilityInject(IArtificialBlocksStore.class)
+    public static final Capability<IArtificialBlocksStore> ARTIFICIAL_BLOCKS_STORE;
+
     static {
         SKILL_HOLDER = DexterityAPI.annotationInjection();
         GLINT_MARKER = DexterityAPI.annotationInjection();
+        ARTIFICIAL_BLOCKS_STORE = DexterityAPI.annotationInjection();
     }
 
     public static <T extends CapabilityProvider<T>, C> LazyOptional<C> get(T type, Capability<C> capability) {
         return type.getCapability(capability, null);
-    }
-
-    public static int getSkillLevel(final PlayerEntity player, SkillType skillType) {
-        return player.getCapability(SKILL_HOLDER, player.getHorizontalFacing()).map(holder -> holder.getLevel(skillType)).orElseGet(() -> -1);
     }
 
     public static <C> ICapabilityProvider createProvider(Capability<C> capability, final C instance, boolean simple) {
@@ -76,9 +79,6 @@ public final class DexterityCapabilities {
             }
 
         }, () -> new SkillsHolder(null));
-
-        CapabilityManager.INSTANCE.register(IGlintMarker.class, getVolatileStorage(), GlintMarker::new);
-
         DexterityAPI.attachPlayerCapability(true, event -> {
             final ISkillsHolder skillsHolder = new SkillsHolder((ServerPlayerEntity) event.getObject());
             event.addCapability(SKILLS_HOLDER_ID, createProvider(SKILL_HOLDER, skillsHolder, false));
@@ -94,7 +94,27 @@ public final class DexterityCapabilities {
             });
         })));
 
+        CapabilityManager.INSTANCE.register(IGlintMarker.class, getVolatileStorage(), GlintMarker::new);
         DexterityAPI.attachCapability(ItemStack.class, event -> event.addCapability(GLINT_MARKER_ID, createProvider(GLINT_MARKER, new GlintMarker(event.getObject()), true)));
+
+        CapabilityManager.INSTANCE.register(IArtificialBlocksStore.class, new Capability.IStorage<IArtificialBlocksStore>() {
+
+            @Override
+            public INBT writeNBT(Capability<IArtificialBlocksStore> capability, IArtificialBlocksStore instance, Direction side) {
+                CompoundNBT posStore = new CompoundNBT();
+                posStore.putLongArray(DexterityAPI.NBT.ARTIFICIAL_BLOCKS_STORE_TAG, instance.getArtificialPosSet().toLongArray());
+                return posStore;
+            }
+
+            @Override
+            public void readNBT(Capability<IArtificialBlocksStore> capability, IArtificialBlocksStore instance, Direction side, INBT nbt) {
+                for (long pos : ((CompoundNBT) nbt).getLongArray(DexterityAPI.NBT.ARTIFICIAL_BLOCKS_STORE_TAG)) {
+                    instance.addArtificialEntry(pos);
+                }
+            }
+
+        }, () -> new ArtificialBlocksStore(null));
+        DexterityAPI.attachCapability(World.class, event -> event.addCapability(ARTIFICIAL_BLOCKS_STORE_ID, createProvider(ARTIFICIAL_BLOCKS_STORE, new ArtificialBlocksStore(event.getObject()), false)));
 
     }
 

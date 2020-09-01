@@ -4,6 +4,7 @@
   "compatibilityLevel": "JAVA_8",
   "refmap": "dexterity.refmap.json",
   "mixins": [
+    "BlockItemMixin",
     "ItemStackMixin"
   ],
   "injectors": {
