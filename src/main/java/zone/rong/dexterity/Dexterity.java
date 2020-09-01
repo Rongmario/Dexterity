@@ -57,7 +57,15 @@ public class Dexterity {
 
     private void itemUseTest(PlayerInteractEvent.RightClickItem event) {
         if (event.getPlayer().isSneaking()) {
-            DexterityCapabilities.get(event.getItemStack(), DexterityCapabilities.GLINT_MARKER).ifPresent(g -> g.setGlint(!g.hasGlint()));
+            DexterityCapabilities.get(event.getItemStack(), DexterityCapabilities.GLINT_MARKER).ifPresent(g -> {
+                g.setGlint(!g.hasGlint());
+                if (g.hasGlint()) {
+                    DexterityCapabilities.get(event.getPlayer(), DexterityCapabilities.SKILL_HOLDER).ifPresent(s -> {
+                        s.addXP(10, DexterityAPI.Skills.ALCHEMY);
+                    });
+                }
+            });
+
         }
     }
 
