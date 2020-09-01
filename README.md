@@ -1,2 +1,2 @@
 # Dexterity
-A total immersion MMORPG mod for Fabric 1.16.1+
+A total immersion MMORPG mod for Forge 1.15+.
