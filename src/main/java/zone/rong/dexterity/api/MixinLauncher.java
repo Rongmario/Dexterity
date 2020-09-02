@@ -8,6 +8,7 @@ public class MixinLauncher implements IMixinConnector {
     @Override
     public void connect() {
         Mixins.addConfiguration("dexterity.mixins.json");
+        Mixins.addConfiguration("dexterity.skills.mixins.json");
     }
 
 }

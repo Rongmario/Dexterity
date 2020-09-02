@@ -8,7 +8,6 @@ import net.minecraft.util.Direction;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.World;
 import net.minecraftforge.common.capabilities.*;
-import net.minecraftforge.common.util.LazyOptional;
 import zone.rong.dexterity.Dexterity;
 import zone.rong.dexterity.api.DexterityAPI;
 import zone.rong.dexterity.api.capability.world.IArtificialBlocksStore;
@@ -39,10 +38,6 @@ public final class DexterityCapabilities {
         SKILL_HOLDER = DexterityAPI.annotationInjection();
         GLINT_MARKER = DexterityAPI.annotationInjection();
         ARTIFICIAL_BLOCKS_STORE = DexterityAPI.annotationInjection();
-    }
-
-    public static <T extends CapabilityProvider<T>, C> LazyOptional<C> get(T type, Capability<C> capability) {
-        return type.getCapability(capability, null);
     }
 
     public static <C> ICapabilityProvider createProvider(Capability<C> capability, final C instance, boolean simple) {
@@ -83,7 +78,7 @@ public final class DexterityCapabilities {
             final ISkillsHolder skillsHolder = new SkillsHolder((ServerPlayerEntity) event.getObject());
             event.addCapability(SKILLS_HOLDER_ID, createProvider(SKILL_HOLDER, skillsHolder, false));
         });
-        DexterityAPI.onPlayerClone(true, event -> get(event.getOriginal(), SKILL_HOLDER).ifPresent(original -> get(event.getPlayer(), SKILL_HOLDER).ifPresent(current -> {
+        DexterityAPI.onPlayerClone(true, event -> event.getOriginal().getCapability(SKILL_HOLDER).ifPresent(original -> event.getPlayer().getCapability(SKILL_HOLDER).ifPresent(current -> {
             current.setLevel(original.getLevel());
             current.setCurrentXP(original.getCurrentXP());
             current.setTotalXP(original.getTotalXP());
@@ -120,9 +115,7 @@ public final class DexterityCapabilities {
 
     private static <T> Capability.IStorage<T> getVolatileStorage() {
         return new Capability.IStorage<T>() {
-            @Override
             public INBT writeNBT(Capability<T> capability, T instance, Direction side) { return null; }
-            @Override
             public void readNBT(Capability<T> capability, T instance, Direction side, INBT nbt) { }
         };
     }

@@ -15,7 +15,7 @@ public class BlockItemMixin {
     @Inject(method = "tryPlace", at = @At(value = "INVOKE", target = "Lnet/minecraft/advancements/criterion/PlacedBlockTrigger;trigger(Lnet/minecraft/entity/player/ServerPlayerEntity;Lnet/minecraft/util/math/BlockPos;Lnet/minecraft/item/ItemStack;)V", shift = At.Shift.BEFORE))
     private void checkForPlayerPlacement(BlockItemUseContext ctx, CallbackInfoReturnable<ActionResultType> cir) {
         if (ctx.getPlayer() != null && !ctx.getWorld().isRemote) {
-            DexterityCapabilities.get(ctx.getWorld(), DexterityCapabilities.ARTIFICIAL_BLOCKS_STORE).ifPresent(store -> store.addArtificialEntry(ctx.getPos()));
+            ctx.getWorld().getCapability(DexterityCapabilities.ARTIFICIAL_BLOCKS_STORE).ifPresent(store -> store.addArtificialEntry(ctx.getPos()));
         }
     }
 

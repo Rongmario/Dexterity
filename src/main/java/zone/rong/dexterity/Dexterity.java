@@ -43,8 +43,6 @@ public class Dexterity {
         modBus.addListener(this::onNewRegistry);
         modBus.addGenericListener(SkillType.class, this::onSkillRegistry);
         modBus.addListener(this::onCommonSetup);
-
-        forgeBus.addListener(this::itemUseTest);
     }
 
     private void onNewRegistry(RegistryEvent.NewRegistry event) {
@@ -53,20 +51,6 @@ public class Dexterity {
 
     private void onSkillRegistry(RegistryEvent.Register<SkillType> event) {
         DexterityAPI.Skills.init(event.getRegistry());
-    }
-
-    private void itemUseTest(PlayerInteractEvent.RightClickItem event) {
-        if (event.getPlayer().isSneaking()) {
-            DexterityCapabilities.get(event.getItemStack(), DexterityCapabilities.GLINT_MARKER).ifPresent(g -> {
-                g.setGlint(!g.hasGlint());
-                if (g.hasGlint()) {
-                    DexterityCapabilities.get(event.getPlayer(), DexterityCapabilities.SKILL_HOLDER).ifPresent(s -> {
-                        s.addXP(10, DexterityAPI.Skills.ALCHEMY);
-                    });
-                }
-            });
-
-        }
     }
 
     private void onCommonSetup(FMLCommonSetupEvent event) {

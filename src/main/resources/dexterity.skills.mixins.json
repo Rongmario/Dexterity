@@ -1,0 +1,13 @@
+{
+  "required": true,
+  "package": "zone.rong.dexterity.skill.hooks.mixins",
+  "compatibilityLevel": "JAVA_8",
+  "refmap": "dexterity.refmap.json",
+  "mixins": [
+    "PlayerInteractionManagerMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  },
+  "minVersion": "0.8"
+}

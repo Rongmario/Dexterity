@@ -29,7 +29,7 @@ public abstract class ItemStackMixin {
 
     @Inject(method = "hasEffect", at = @At("RETURN"), cancellable = true)
     private void injectGlintMarkerCheck(CallbackInfoReturnable<Boolean> cir) {
-        cir.setReturnValue(cir.getReturnValueZ() || DexterityCapabilities.get((ItemStack) (Object) (this), DexterityCapabilities.GLINT_MARKER).map(IGlintMarker::hasGlint).orElse(false));
+        cir.setReturnValue(cir.getReturnValueZ() || ((ItemStack) (Object) (this)).getCapability(DexterityCapabilities.GLINT_MARKER).map(IGlintMarker::hasGlint).orElse(false));
     }
 
 }

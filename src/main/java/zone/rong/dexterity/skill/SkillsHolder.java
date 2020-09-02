@@ -68,7 +68,12 @@ public class SkillsHolder implements ISkillsHolder {
     }
 
     @Override
-    public void addXP(int xp, SkillType skillType) {
+    public <XP> void addXP(Class<XP> entryClass, XP entry) {
+        this.skills.keySet().forEach(s -> addXP(s, s.getXP(entryClass, entry)));
+    }
+
+    @Override
+    public void addXP(SkillType skillType, int xp) {
         int xpToAdd = player.getLuck() >= 1F ? xp * 2 : xp;
         SkillContainer skillContainer = this.skills.get(skillType);
         skillContainer.currentXP += xpToAdd;

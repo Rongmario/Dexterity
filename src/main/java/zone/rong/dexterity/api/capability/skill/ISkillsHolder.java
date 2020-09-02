@@ -9,7 +9,9 @@ public interface ISkillsHolder {
 
     Collection<SkillContainer> getContainers();
 
-    void addXP(int xp, SkillType skillType);
+    <XP> void addXP(Class<XP> entryClass, XP entry);
+
+    void addXP(SkillType skillType, int xp);
 
     void setLevel(int level);
 

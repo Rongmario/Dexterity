@@ -110,7 +110,7 @@ mixin {
 jar {
     manifest {
         attributes([
-            "MixinConfigs": "dexterity.mixins.json",
+            "MixinConfigs": ["dexterity.mixins.json", "dexterity.skills.mixins.json"],
             "Specification-Title": "dexterity",
             "Specification-Vendor": "Rongmario",
             "Specification-Version": "1", // We are version 1 of ourselves
