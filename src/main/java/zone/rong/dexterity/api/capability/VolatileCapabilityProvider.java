@@ -8,12 +8,10 @@ import net.minecraftforge.common.util.LazyOptional;
 public class VolatileCapabilityProvider<C> implements ICapabilityProvider {
 
     private final Capability<C> capability;
-    private final C instance;
     protected final LazyOptional<C> lazyCapability;
 
     public VolatileCapabilityProvider(Capability<C> capability, C instance) {
         this.capability = capability;
-        this.instance = instance;
         this.lazyCapability = LazyOptional.of(() -> instance);
     }
 
