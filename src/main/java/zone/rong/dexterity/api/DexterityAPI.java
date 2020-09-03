@@ -1,11 +1,16 @@
 package zone.rong.dexterity.api;
 
+import net.minecraft.block.Block;
+import net.minecraft.block.Blocks;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
+import net.minecraft.item.Item;
 import net.minecraft.item.Items;
+import net.minecraft.item.PickaxeItem;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.TextFormatting;
+import net.minecraftforge.common.Tags;
 import net.minecraftforge.event.AttachCapabilitiesEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.registries.*;
@@ -13,6 +18,7 @@ import zone.rong.dexterity.Dexterity;
 import zone.rong.dexterity.api.skill.SkillType;
 
 import java.util.function.Consumer;
+import java.util.function.Predicate;
 
 public final class DexterityAPI {
 
@@ -83,14 +89,23 @@ public final class DexterityAPI {
     public static class Skills {
 
         public static final SkillType ALCHEMY = new SkillType("alchemy", TextFormatting.RED, Items.POTION);
+        public static final SkillType MINING = new SkillType("mining", TextFormatting.GRAY, Items.DIAMOND_PICKAXE);
 
         public static void init(final IForgeRegistry<SkillType> registry) {
-            registry.register(ALCHEMY);
+            initMining();
+            registry.registerAll(ALCHEMY, MINING);
+        }
+
+        private static void initMining() {
+            MINING.addPredicateCompatibility(Item.class, i -> i.isIn(Tags.Items.INGOTS));
+            MINING.addPredicateXP(Block.class, b -> b == Blocks.GRASS_BLOCK, 50);
         }
 
     }
 
     public static class NBT {
+
+        public static final String PLAYER_STATS_TAG = "Stats";
 
         public static final String LEVEL_TAG = "Level";
         public static final String CURRENT_XP_TAG = "CurrentXp";

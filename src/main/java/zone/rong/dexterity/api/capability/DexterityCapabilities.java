@@ -1,6 +1,7 @@
 package zone.rong.dexterity.api.capability;
 
 import net.minecraft.entity.player.ServerPlayerEntity;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.nbt.INBT;
@@ -52,6 +53,11 @@ public final class DexterityCapabilities {
             @Override
             public INBT writeNBT(Capability<ISkillsHolder> capability, ISkillsHolder instance, Direction side) {
                 CompoundNBT holderTag = new CompoundNBT();
+                CompoundNBT playerTag = new CompoundNBT();
+                playerTag.putInt(DexterityAPI.NBT.LEVEL_TAG, instance.getLevel());
+                playerTag.putInt(DexterityAPI.NBT.CURRENT_XP_TAG, instance.getCurrentXP());
+                playerTag.putLong(DexterityAPI.NBT.TOTAL_XP_TAG, instance.getTotalXP());
+                holderTag.put(DexterityAPI.NBT.PLAYER_STATS_TAG, playerTag);
                 for (SkillContainer container : instance.getContainers()) {
                     CompoundNBT skillTag = new CompoundNBT();
                     skillTag.putInt(DexterityAPI.NBT.LEVEL_TAG, container.level);
@@ -65,11 +71,18 @@ public final class DexterityCapabilities {
             @Override
             public void readNBT(Capability<ISkillsHolder> capability, ISkillsHolder instance, Direction side, INBT nbt) {
                 for (String key : ((CompoundNBT) nbt).keySet()) {
-                    CompoundNBT skillTag = ((CompoundNBT) nbt).getCompound(key);
-                    SkillType skillType = DexterityAPI.Registries.SKILLS.getValue(ResourceLocation.tryCreate(key));
-                    instance.setLevel(skillType, skillTag.getInt(DexterityAPI.NBT.LEVEL_TAG));
-                    instance.setCurrentXP(skillType, skillTag.getInt(DexterityAPI.NBT.CURRENT_XP_TAG));
-                    instance.setTotalXP(skillType, skillTag.getInt(DexterityAPI.NBT.TOTAL_XP_TAG));
+                    if (key.equals(DexterityAPI.NBT.PLAYER_STATS_TAG)) {
+                        CompoundNBT playerTag = ((CompoundNBT) nbt).getCompound(key);
+                        instance.setLevel(playerTag.getInt(DexterityAPI.NBT.LEVEL_TAG));
+                        instance.setCurrentXP(playerTag.getInt(DexterityAPI.NBT.CURRENT_XP_TAG));
+                        instance.setTotalXP(playerTag.getInt(DexterityAPI.NBT.TOTAL_XP_TAG));
+                    } else {
+                        CompoundNBT skillTag = ((CompoundNBT) nbt).getCompound(key);
+                        SkillType skillType = DexterityAPI.Registries.SKILLS.getValue(ResourceLocation.tryCreate(key));
+                        instance.setLevel(skillType, skillTag.getInt(DexterityAPI.NBT.LEVEL_TAG));
+                        instance.setCurrentXP(skillType, skillTag.getInt(DexterityAPI.NBT.CURRENT_XP_TAG));
+                        instance.setTotalXP(skillType, skillTag.getInt(DexterityAPI.NBT.TOTAL_XP_TAG));
+                    }
                 }
             }
 
@@ -90,7 +103,11 @@ public final class DexterityCapabilities {
         })));
 
         CapabilityManager.INSTANCE.register(IGlintMarker.class, getVolatileStorage(), GlintMarker::new);
-        DexterityAPI.attachCapability(ItemStack.class, event -> event.addCapability(GLINT_MARKER_ID, createProvider(GLINT_MARKER, new GlintMarker(event.getObject()), true)));
+        DexterityAPI.attachCapability(ItemStack.class, event -> { // Shall I bother filtering glint markers?
+            if (DexterityAPI.Registries.SKILLS.getValues().stream().anyMatch(s -> s.isCompatible(Item.class, event.getObject().getItem()))) {
+                event.addCapability(GLINT_MARKER_ID, createProvider(GLINT_MARKER, new GlintMarker(event.getObject()), true));
+            }
+        });
 
         CapabilityManager.INSTANCE.register(IArtificialBlocksStore.class, new Capability.IStorage<IArtificialBlocksStore>() {
 

@@ -9,7 +9,7 @@ public interface ISkillsHolder {
 
     Collection<SkillContainer> getContainers();
 
-    <XP> void addXP(Class<XP> entryClass, XP entry);
+    <XP, C> void addXP(Class<XP> xpClass, XP xpObject, Class<C> compatibleClass, C compatibleObject);
 
     void addXP(SkillType skillType, int xp);
 
