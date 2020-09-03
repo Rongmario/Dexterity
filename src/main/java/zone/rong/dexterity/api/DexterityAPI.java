@@ -8,6 +8,7 @@ import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.Items;
 import net.minecraft.item.PickaxeItem;
+import net.minecraft.potion.Potion;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.common.Tags;
@@ -92,13 +93,19 @@ public final class DexterityAPI {
         public static final SkillType MINING = new SkillType("mining", TextFormatting.GRAY, Items.DIAMOND_PICKAXE);
 
         public static void init(final IForgeRegistry<SkillType> registry) {
+            initAlchemy();
             initMining();
             registry.registerAll(ALCHEMY, MINING);
         }
 
+        private static void initAlchemy() {
+            ALCHEMY.addCompatibility(Block.class, Blocks.BREWING_STAND);
+            ALCHEMY.addPredicateXP(Potion.class, p -> p.getEffects().stream().anyMatch(e -> e.getPotion().isBeneficial()), 20);
+        }
+
         private static void initMining() {
-            MINING.addPredicateCompatibility(Item.class, i -> i.isIn(Tags.Items.INGOTS));
-            MINING.addPredicateXP(Block.class, b -> b == Blocks.GRASS_BLOCK, 50);
+            MINING.addPredicateCompatibility(Item.class, i -> i instanceof PickaxeItem);
+            MINING.addTagXP(Block.class, Tags.Blocks.STONE, 1);
         }
 
     }

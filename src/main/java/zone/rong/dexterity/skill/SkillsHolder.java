@@ -41,7 +41,7 @@ public class SkillsHolder implements ISkillsHolder {
 
     private long totalXP;
 
-    private int level = 1;
+    private int level;
     private int currentXP;
 
     public SkillsHolder(ServerPlayerEntity player) {
@@ -63,8 +63,8 @@ public class SkillsHolder implements ISkillsHolder {
         skillContainer.currentXP = Math.abs(difference);
         MinecraftServer server = player.server;
         if (!(server instanceof IntegratedServer)) {
-            if (this.level % 10 == 0) {
-                if (this.level % 50 == 0) {
+            if (skillContainer.level % 10 == 0) {
+                if (skillContainer.level % 50 == 0) {
                     server.getPlayerList().getPlayers().stream().filter(p -> p != player).forEach(p -> p.playSound(SoundEvents.UI_TOAST_CHALLENGE_COMPLETE, SoundCategory.PLAYERS, 0.75F, 1.0F));
                 }
                 SkillType skill = skillContainer.skillType;
