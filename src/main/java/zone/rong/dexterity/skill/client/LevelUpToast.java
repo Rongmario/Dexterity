@@ -29,13 +29,13 @@ public class LevelUpToast implements IToast {
     @Override
     public Visibility draw(ToastGui gui, long startTime) {
         int colour = skillType.getColour().getColor();
-        RenderSystem.color4f((colour >> 16) / (float) 255, ((colour >> 8) & 255) / (float) 255, (colour & 255) / (float) 255, 0.4F);
+        RenderSystem.color3f((colour >> 16) / (float) 255, ((colour >> 8) & 255) / (float) 255, (colour & 255) / (float) 255);
         gui.getMinecraft().textureManager.bindTexture(TEXTURE_TOASTS);
         gui.blit(0, 0, 0, 32, 160, 32);
         gui.getMinecraft().fontRenderer.drawString(I18n.format(skillType.getName().getKey()), 30.0F, 7.0F, colour);
         gui.getMinecraft().fontRenderer.drawString(I18n.format("toast.dexterity.level_up", this.level - 1, "->", this.level)/*I18n.format("toast.dexterity.level_up", this.level - 1, "➮", this.level)*/, 30.0F, 18.0F, TextFormatting.WHITE.getColor());
         RenderSystem.pushMatrix();
-        gui.getMinecraft().getItemRenderer().renderItemIntoGUI(skillType.getAssociatedItem().get(), 8, 8);
+        skillType.callToRenderInToast().render(this, gui, 32, 160);
         RenderSystem.popMatrix();
         if (startTime == 0L && !soundPlayed) {
             this.soundPlayed = true;

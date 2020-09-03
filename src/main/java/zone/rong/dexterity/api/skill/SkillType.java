@@ -12,28 +12,29 @@ import zone.rong.dexterity.Dexterity;
 import zone.rong.dexterity.api.LazyObject2IntOpenHashMap;
 
 import java.util.Collection;
+import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 
 public class SkillType extends ForgeRegistryEntry<SkillType> {
 
     private final TextFormatting colour;
-    private final Supplier<ItemStack> associatedItem;
     private final TranslationTextComponent name, description;
     private final Object2ObjectMap<Class<?>, LazyObject2IntOpenHashMap<?>> lazyXPQuery;
     private final Object2ObjectMap<Class<?>, Object2IntMap<Predicate<?>>> xpPredicateMatching;
     private final Object2ObjectMap<Class<?>, Collection<?>> compatibleToolsQuery;
     private final Object2ObjectMap<Class<?>, Predicate<?>> compatibleToolPredicateMatching;
 
-    public SkillType(String id, TextFormatting colour, IItemProvider associatedItem) {
-        this(Dexterity.MOD_ID, id, colour, associatedItem);
+    private RenderInToast onToastRender;
+
+    public SkillType(String id, TextFormatting colour) {
+        this(Dexterity.MOD_ID, id, colour);
     }
 
-    public SkillType(String domain, String id, TextFormatting colour, IItemProvider associatedItem) {
+    public SkillType(String domain, String id, TextFormatting colour) {
         this.name = new TranslationTextComponent("skill.dexterity." + domain + "_" + id);
         this.description = new TranslationTextComponent("skill.dexterity." + domain + "_" + id);
         this.colour = colour;
-        this.associatedItem = () -> new ItemStack(associatedItem);
         this.lazyXPQuery = new Object2ObjectOpenHashMap<>();
         this.xpPredicateMatching = new Object2ObjectOpenHashMap<>();
         this.compatibleToolsQuery = new Object2ObjectOpenHashMap<>();
@@ -54,8 +55,16 @@ public class SkillType extends ForgeRegistryEntry<SkillType> {
         return colour;
     }
 
-    public Supplier<ItemStack> getAssociatedItem() {
-        return associatedItem;
+    public void onToastRender(RenderInToast onToastRender) {
+        this.onToastRender = onToastRender;
+    }
+
+    public void onToastRender(Supplier<ItemStack> stack, Function<ItemStack, ItemRenderInToast> onToastRender) {
+        this.onToastRender = onToastRender.apply(stack.get());
+    }
+
+    public RenderInToast callToRenderInToast() {
+        return onToastRender;
     }
 
     public <XP> int getXP(Class<XP> entryClass, XP entry) {

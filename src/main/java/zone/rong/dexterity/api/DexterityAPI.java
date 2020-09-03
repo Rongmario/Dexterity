@@ -7,6 +7,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.item.PickaxeItem;
 import net.minecraft.potion.Potion;
@@ -90,8 +91,8 @@ public final class DexterityAPI {
 
     public static class Skills {
 
-        public static final SkillType ALCHEMY = new SkillType("alchemy", TextFormatting.RED, Items.POTION);
-        public static final SkillType MINING = new SkillType("mining", TextFormatting.GRAY, Items.DIAMOND_PICKAXE);
+        public static final SkillType ALCHEMY = new SkillType("alchemy", TextFormatting.RED);
+        public static final SkillType MINING = new SkillType("mining", TextFormatting.GRAY);
 
         public static void init(final IForgeRegistry<SkillType> registry) {
             initAlchemy();
@@ -100,12 +101,13 @@ public final class DexterityAPI {
         }
 
         private static void initAlchemy() {
-            ALCHEMY.addCompatibility(Block.class, Blocks.BREWING_STAND);
-            ALCHEMY.addPredicateXP(Potion.class, p -> p.getEffects().stream().anyMatch(e -> e.getPotion().isBeneficial()), 20);
+            MINING.onToastRender(() -> new ItemStack(Items.POTION), stack -> ((itemRenderer, heightOfToast, widthOfToast) -> itemRenderer.renderItemIntoGUI(stack, 8, 8)));
+            ALCHEMY.addCompatibility(Block.class, Blocks.BREWING_STAND).addPredicateXP(Potion.class, p -> p.getEffects().stream().anyMatch(e -> e.getPotion().isBeneficial()), 20);
         }
 
         private static void initMining() {
             MINING.addPredicateCompatibility(Item.class, PickaxeItem.class::isInstance);
+            MINING.onToastRender(() -> new ItemStack(Items.DIAMOND_PICKAXE), stack -> ((itemRenderer, heightOfToast, widthOfToast) -> itemRenderer.renderItemIntoGUI(stack, 8, 8)));
             MINING.addTagXP(Block.class, Tags.Blocks.STONE, 1)
                     .addXP(Block.class, Blocks.NETHERRACK, 2)
                     .addXP(Block.class, Blocks.END_STONE, 5)
