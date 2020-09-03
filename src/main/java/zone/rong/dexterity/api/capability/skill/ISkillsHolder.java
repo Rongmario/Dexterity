@@ -10,11 +10,20 @@ public interface ISkillsHolder {
     Collection<SkillContainer> getContainers();
 
     /**
-     * Return -1 for unsuccessful, do not retry. Return 0 for unsuccessful, but do retry with different parameters. Return more than 0, for xp added.
+     * @return -1 for unsuccessful (not comptaible - hence do not try).
+     * 0 for unsuccessful, but do retry with different parameters. More than 0 would be the amount of xp added.
      */
     <XP, C> int addXP(Class<XP> xpClass, XP xpObject, Class<C> compatibleClass, C compatibleObject);
 
-    void addXP(SkillType skillType, int xp);
+    /**
+     * @return 0 if the operation is unsuccessful, more than 0 would be the amount of xp added
+     */
+    <XP> int addXP(Class<XP> xpClass, XP xpObject);
+
+    /**
+     * @return xp added. This takes into account Player's luck level.
+     */
+    int addXP(SkillType skillType, int xp);
 
     void setLevel(int level);
 

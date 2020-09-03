@@ -83,37 +83,42 @@ public class SkillsHolder implements ISkillsHolder {
     @Override
     public <XP, C> int addXP(Class<XP> xpClass, XP xpObject, Class<C> compatibleClass, C compatibleObject) {
         if (this.skills.keySet().stream().anyMatch(s -> s.isCompatible(compatibleClass, compatibleObject))) {
-            try {
-                Pair<SkillType, Integer> pair = ((Cache<XP, Pair<SkillType, Integer>>) internalCache).get(xpObject, () -> {
-                    SkillType type = null;
-                    int resultXP = 0;
-                    for (SkillType skillType : this.skills.keySet()) {
-                        int xp = skillType.getXP(xpClass, xpObject);
-                        if (resultXP < xp) {
-                            type = skillType;
-                            resultXP = xp;
-                        }
-                    }
-                    if (type != null) {
-                        addXP(type, resultXP);
-                    }
-                    return Pair.of(type, resultXP);
-                });
-                addXP(pair.getLeft(), pair.getRight());
-                return pair.getRight();
-            } catch (ExecutionException e) {
-                throw new RuntimeException(e.getCause());
-            }
+            return addXP(xpClass, xpObject);
         }
         return -1;
     }
 
     @Override
-    public void addXP(SkillType skillType, int xp) {
+    public <XP> int addXP(Class<XP> xpClass, XP xpObject) {
+        try {
+            Pair<SkillType, Integer> pair = ((Cache<XP, Pair<SkillType, Integer>>) internalCache).get(xpObject, () -> {
+                SkillType type = null;
+                int resultXP = 0;
+                for (SkillType skillType : this.skills.keySet()) {
+                    int xp = skillType.getXP(xpClass, xpObject);
+                    if (resultXP < xp) {
+                        type = skillType;
+                        resultXP = xp;
+                    }
+                }
+                if (type != null) {
+                    addXP(type, resultXP);
+                }
+                return Pair.of(type, resultXP);
+            });
+            return pair.getRight() != 0 ? addXP(pair.getLeft(), pair.getRight()) : 0;
+        } catch (ExecutionException e) {
+            throw new RuntimeException(e.getCause());
+        }
+    }
+
+    @Override
+    public int addXP(SkillType skillType, int xp) {
         int xpToAdd = player.getLuck() >= 1F ? xp * 2 : xp;
         SkillContainer skillContainer = this.skills.get(skillType);
         skillContainer.addXP(xpToAdd);
         check(skillContainer);
+        return xpToAdd;
     }
 
     @Override
