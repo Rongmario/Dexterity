@@ -3,13 +3,16 @@ package zone.rong.dexterity.api.skill;
 import it.unimi.dsi.fastutil.objects.*;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tags.Tag;
-import net.minecraft.util.IItemProvider;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.util.text.TranslationTextComponent;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.registries.ForgeRegistryEntry;
 import zone.rong.dexterity.Dexterity;
 import zone.rong.dexterity.api.LazyObject2IntOpenHashMap;
+import zone.rong.dexterity.api.skill.client.ItemRenderInToast;
+import zone.rong.dexterity.api.skill.client.RenderInToast;
 
 import java.util.Collection;
 import java.util.function.Function;
@@ -25,6 +28,7 @@ public class SkillType extends ForgeRegistryEntry<SkillType> {
     private final Object2ObjectMap<Class<?>, Collection<?>> compatibleToolsQuery;
     private final Object2ObjectMap<Class<?>, Predicate<?>> compatibleToolPredicateMatching;
 
+    @OnlyIn(Dist.CLIENT)
     private RenderInToast onToastRender;
 
     public SkillType(String id, TextFormatting colour) {
@@ -55,15 +59,18 @@ public class SkillType extends ForgeRegistryEntry<SkillType> {
         return colour;
     }
 
+    @OnlyIn(Dist.CLIENT)
     public void onToastRender(RenderInToast onToastRender) {
         this.onToastRender = onToastRender;
     }
 
+    @OnlyIn(Dist.CLIENT)
     public void onToastRender(Supplier<ItemStack> stack, Function<ItemStack, ItemRenderInToast> onToastRender) {
         this.onToastRender = onToastRender.apply(stack.get());
     }
 
-    public RenderInToast callToRenderInToast() {
+    @OnlyIn(Dist.CLIENT)
+    public RenderInToast toastRenderCallback() {
         return onToastRender;
     }
 

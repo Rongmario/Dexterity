@@ -106,9 +106,9 @@ public final class DexterityAPI {
         }
 
         private static void initMining() {
-            MINING.addPredicateCompatibility(Item.class, PickaxeItem.class::isInstance);
             MINING.onToastRender(() -> new ItemStack(Items.DIAMOND_PICKAXE), stack -> ((itemRenderer, heightOfToast, widthOfToast) -> itemRenderer.renderItemIntoGUI(stack, 8, 8)));
-            MINING.addTagXP(Block.class, Tags.Blocks.STONE, 1)
+            MINING.addPredicateCompatibility(Item.class, PickaxeItem.class::isInstance)
+                    .addTagXP(Block.class, Tags.Blocks.STONE, 1)
                     .addXP(Block.class, Blocks.NETHERRACK, 2)
                     .addXP(Block.class, Blocks.END_STONE, 5)
                     .addXP(Block.class, Blocks.GLOWSTONE, 20)

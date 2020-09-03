@@ -35,7 +35,7 @@ public class LevelUpToast implements IToast {
         gui.getMinecraft().fontRenderer.drawString(I18n.format(skillType.getName().getKey()), 30.0F, 7.0F, colour);
         gui.getMinecraft().fontRenderer.drawString(I18n.format("toast.dexterity.level_up", this.level - 1, "->", this.level)/*I18n.format("toast.dexterity.level_up", this.level - 1, "➮", this.level)*/, 30.0F, 18.0F, TextFormatting.WHITE.getColor());
         RenderSystem.pushMatrix();
-        skillType.callToRenderInToast().render(this, gui, 32, 160);
+        skillType.toastRenderCallback().render(this, gui, 32, 160);
         RenderSystem.popMatrix();
         if (startTime == 0L && !soundPlayed) {
             this.soundPlayed = true;
