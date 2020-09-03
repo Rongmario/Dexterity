@@ -15,4 +15,9 @@ public class SkillContainer {
         this.skillType = skillType;
     }
 
+    void addXP(int amount) {
+        this.currentXP += amount;
+        this.totalXP += amount;
+    }
+
 }

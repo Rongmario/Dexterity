@@ -9,7 +9,10 @@ public interface ISkillsHolder {
 
     Collection<SkillContainer> getContainers();
 
-    <XP, C> void addXP(Class<XP> xpClass, XP xpObject, Class<C> compatibleClass, C compatibleObject);
+    /**
+     * Return -1 for unsuccessful, do not retry. Return 0 for unsuccessful, but do retry with different parameters. Return more than 0, for xp added.
+     */
+    <XP, C> int addXP(Class<XP> xpClass, XP xpObject, Class<C> compatibleClass, C compatibleObject);
 
     void addXP(SkillType skillType, int xp);
 

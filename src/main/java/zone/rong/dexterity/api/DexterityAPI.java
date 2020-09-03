@@ -2,6 +2,7 @@ package zone.rong.dexterity.api;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
+import net.minecraft.block.material.Material;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
@@ -104,8 +105,42 @@ public final class DexterityAPI {
         }
 
         private static void initMining() {
-            MINING.addPredicateCompatibility(Item.class, i -> i instanceof PickaxeItem);
-            MINING.addTagXP(Block.class, Tags.Blocks.STONE, 1);
+            MINING.addPredicateCompatibility(Item.class, PickaxeItem.class::isInstance);
+            MINING.addTagXP(Block.class, Tags.Blocks.STONE, 1)
+                    .addXP(Block.class, Blocks.NETHERRACK, 2)
+                    .addXP(Block.class, Blocks.END_STONE, 5)
+                    .addXP(Block.class, Blocks.GLOWSTONE, 20)
+                    .addXP(Block.class, Blocks.NETHER_BRICKS, 10)
+                    .addXP(Block.class, Blocks.MAGMA_BLOCK, 20)
+                    .addXP(Block.class, Blocks.OBSIDIAN, 20)
+                    .addXP(Block.class, Blocks.PRISMARINE, 35)
+                    .addXP(Block.class, Blocks.PRISMARINE_BRICKS, 35)
+                    .addXP(Block.class, Blocks.PRISMARINE_SLAB, 40)
+                    .addXP(Block.class, Blocks.PRISMARINE_STAIRS, 40)
+                    .addXP(Block.class, Blocks.PRISMARINE_WALL, 40)
+                    .addXP(Block.class, Blocks.PRISMARINE_BRICK_STAIRS, 40)
+                    .addXP(Block.class, Blocks.COAL_ORE, 50)
+                    .addXP(Block.class, Blocks.DARK_PRISMARINE, 80)
+                    .addXP(Block.class, Blocks.DARK_PRISMARINE_SLAB, 80)
+                    .addXP(Block.class, Blocks.DARK_PRISMARINE_STAIRS, 80)
+                    // .addXP(Block.class, Blocks.CRYING_OBSIDIAN, 250) TODO: 1.16
+                    .addXP(Block.class, Blocks.IRON_ORE, 100)
+                    // .addXP(Block.class, Blocks.NETHER_GOLD_ORE, 300) TODO: 1.16
+                    .addXP(Block.class, Blocks.COAL_BLOCK, 200)
+                    .addXP(Block.class, Blocks.GOLD_ORE, 250)
+                    .addXP(Block.class, Blocks.IRON_BLOCK, 300)
+                    .addXP(Block.class, Blocks.DIAMOND_ORE, 500)
+                    .addXP(Block.class, Blocks.ANVIL, 600)
+                    .addXP(Block.class, Blocks.GOLD_BLOCK, 750)
+                    .addXP(Block.class, Blocks.EMERALD_ORE, 1000)
+                    .addXP(Block.class, Blocks.DIAMOND_BLOCK, 1500)
+                    .addXP(Block.class, Blocks.EMERALD_BLOCK, 3000)
+                    .addXP(Material.class, Material.PACKED_ICE, 5)
+                    .addXP(Material.class, Material.IRON, 10)
+                    .addXP(Material.class, Material.REDSTONE_LIGHT, 100)
+                    .addXP(Material.class, Material.SHULKER, 500)
+                    .addXP(Material.class, Material.ROCK, 2); // TODO: 1.16 - REPAIR_STATION
+
         }
 
     }

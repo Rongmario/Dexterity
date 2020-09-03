@@ -28,6 +28,7 @@ import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 
 import static zone.rong.dexterity.api.DexterityAPI.Registries.SKILLS;
@@ -37,7 +38,7 @@ public class SkillsHolder implements ISkillsHolder {
     private final ServerPlayerEntity player;
 
     private final Object2ObjectMap<SkillType, SkillContainer> skills;
-    private final Cache<?, Integer> internalCache;
+    private final Cache<?, Pair<SkillType, Integer>> internalCache;
 
     private long totalXP;
 
@@ -80,10 +81,10 @@ public class SkillsHolder implements ISkillsHolder {
     }
 
     @Override
-    public <XP, C> void addXP(Class<XP> xpClass, XP xpObject, Class<C> compatibleClass, C compatibleObject) {
+    public <XP, C> int addXP(Class<XP> xpClass, XP xpObject, Class<C> compatibleClass, C compatibleObject) {
         if (this.skills.keySet().stream().anyMatch(s -> s.isCompatible(compatibleClass, compatibleObject))) {
             try {
-                ((Cache<XP, Integer>) internalCache).get(xpObject, () -> {
+                Pair<SkillType, Integer> pair = ((Cache<XP, Pair<SkillType, Integer>>) internalCache).get(xpObject, () -> {
                     SkillType type = null;
                     int resultXP = 0;
                     for (SkillType skillType : this.skills.keySet()) {
@@ -96,20 +97,22 @@ public class SkillsHolder implements ISkillsHolder {
                     if (type != null) {
                         addXP(type, resultXP);
                     }
-                    return resultXP;
+                    return Pair.of(type, resultXP);
                 });
+                addXP(pair.getLeft(), pair.getRight());
+                return pair.getRight();
             } catch (ExecutionException e) {
                 throw new RuntimeException(e.getCause());
             }
         }
+        return -1;
     }
 
     @Override
     public void addXP(SkillType skillType, int xp) {
         int xpToAdd = player.getLuck() >= 1F ? xp * 2 : xp;
         SkillContainer skillContainer = this.skills.get(skillType);
-        skillContainer.currentXP += xpToAdd;
-        skillContainer.totalXP += xpToAdd;
+        skillContainer.addXP(xpToAdd);
         check(skillContainer);
     }
 

@@ -2,6 +2,7 @@ package zone.rong.dexterity.skill.hooks.mixins;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
+import net.minecraft.block.material.Material;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -22,7 +23,11 @@ public class PlayerInteractionManagerMixin {
         block.harvestBlock(world, player, pos, state, te, stack);
         world.getCapability(DexterityCapabilities.ARTIFICIAL_BLOCKS_STORE).ifPresent(store -> {
             if (!store.isBlockArtificial(pos)) {
-                player.getCapability(DexterityCapabilities.SKILL_HOLDER).ifPresent(holder -> holder.addXP(Block.class, block, Item.class, stack.getItem()));
+                player.getCapability(DexterityCapabilities.SKILL_HOLDER).ifPresent(holder -> {
+                    if (holder.addXP(Block.class, block, Item.class, stack.getItem()) == 0) {
+                        holder.addXP(Material.class, state.getMaterial(), Item.class, stack.getItem());
+                    }
+                });
             }
         });
     }
