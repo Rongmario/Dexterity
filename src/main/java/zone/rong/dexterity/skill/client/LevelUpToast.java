@@ -40,9 +40,9 @@ public class LevelUpToast implements IToast {
         if (startTime == 0L && !soundPlayed) {
             this.soundPlayed = true;
             if (this.level % 10 == 0) {
-                gui.getMinecraft().getSoundHandler().play(SimpleSound.master(SoundEvents.UI_TOAST_CHALLENGE_COMPLETE, 1.0F, 1.0F));
+                gui.getMinecraft().getSoundHandler().play(SimpleSound.master(SoundEvents.UI_TOAST_CHALLENGE_COMPLETE, 1.0F, 0.7F));
             } else {
-                gui.getMinecraft().getSoundHandler().play(SimpleSound.master(SoundEvents.ENTITY_PLAYER_LEVELUP, 1.0F, 1.0F));
+                gui.getMinecraft().getSoundHandler().play(SimpleSound.master(SoundEvents.ENTITY_PLAYER_LEVELUP, 1.0F, 0.7F));
             }
         }
         return startTime >= 2000L ? Visibility.HIDE : Visibility.SHOW;

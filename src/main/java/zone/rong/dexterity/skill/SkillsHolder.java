@@ -41,7 +41,7 @@ public class SkillsHolder implements ISkillsHolder {
 
     private long totalXP;
 
-    private int level;
+    private int level = 1;
     private int currentXP;
 
     public SkillsHolder(ServerPlayerEntity player) {
@@ -173,9 +173,9 @@ public class SkillsHolder implements ISkillsHolder {
         return this.skills.get(skillType).totalXP;
     }
 
-    // TODO: Subject to change - and made configurable
+    // TODO: Make configurable somehow, also -> limit break (bonus when limit broken, player can limit break 10 times...) ?
     long getLevelXPRequirement(int level) {
-        return Math.round(1.618033988 * level * Math.E);
+        return 2 * level * (int) Math.ceil((double) level / 100);
     }
 
     int getXPNeededForNextLevel(int level, int currentXP) {
