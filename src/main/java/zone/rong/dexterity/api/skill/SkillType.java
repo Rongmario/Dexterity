@@ -21,7 +21,7 @@ import java.util.function.Supplier;
 
 public class SkillType extends ForgeRegistryEntry<SkillType> {
 
-    private final TextFormatting colour;
+    private final int colour;
     private final TranslationTextComponent name, description;
     private final Object2ObjectMap<Class<?>, LazyObject2IntOpenHashMap<?>> lazyXPQuery;
     private final Object2ObjectMap<Class<?>, Object2IntMap<Predicate<?>>> xpPredicateMatching;
@@ -31,11 +31,11 @@ public class SkillType extends ForgeRegistryEntry<SkillType> {
     @OnlyIn(Dist.CLIENT)
     private RenderInToast onToastRender;
 
-    public SkillType(String id, TextFormatting colour) {
+    public SkillType(String id, int colour) {
         this(Dexterity.MOD_ID, id, colour);
     }
 
-    public SkillType(String domain, String id, TextFormatting colour) {
+    public SkillType(String domain, String id, int colour) {
         this.name = new TranslationTextComponent("skill.dexterity." + domain + "_" + id);
         this.description = new TranslationTextComponent("skill.dexterity." + domain + "_" + id);
         this.colour = colour;
@@ -55,7 +55,7 @@ public class SkillType extends ForgeRegistryEntry<SkillType> {
     }
 
     // TODO: change in 1.16+
-    public TextFormatting getColour() {
+    public int getColour() {
         return colour;
     }
 

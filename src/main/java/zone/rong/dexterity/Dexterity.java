@@ -12,6 +12,7 @@ import zone.rong.dexterity.api.DexterityAPI;
 import zone.rong.dexterity.api.skill.SkillType;
 import zone.rong.dexterity.api.capability.DexterityCapabilities;
 import zone.rong.dexterity.networking.DexterityChannel;
+import zone.rong.dexterity.skill.hooks.Events;
 
 import static zone.rong.dexterity.Dexterity.MOD_ID;
 
@@ -42,6 +43,7 @@ public class Dexterity {
         modBus.addListener(this::onNewRegistry);
         modBus.addGenericListener(SkillType.class, this::onSkillRegistry);
         modBus.addListener(this::onCommonSetup);
+        Events.init();
     }
 
     private void onNewRegistry(RegistryEvent.NewRegistry event) {

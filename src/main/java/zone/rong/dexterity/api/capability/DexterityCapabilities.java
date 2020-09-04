@@ -103,7 +103,7 @@ public final class DexterityCapabilities {
         })));
 
         CapabilityManager.INSTANCE.register(IGlintMarker.class, getVolatileStorage(), GlintMarker::new);
-        DexterityAPI.attachCapability(ItemStack.class, event -> { // Shall I bother filtering glint markers?
+        DexterityAPI.attachCapability(ItemStack.class, event -> {
             if (DexterityAPI.Registries.SKILLS.getValues().stream().anyMatch(s -> s.isCompatible(Item.class, event.getObject().getItem()))) {
                 event.addCapability(GLINT_MARKER_ID, createProvider(GLINT_MARKER, new GlintMarker(event.getObject()), true));
             }

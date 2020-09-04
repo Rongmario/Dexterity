@@ -4,15 +4,12 @@ import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.material.Material;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityType;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
-import net.minecraft.item.PickaxeItem;
+import net.minecraft.item.*;
 import net.minecraft.potion.Potion;
 import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.common.Tags;
 import net.minecraftforge.event.AttachCapabilitiesEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
@@ -21,7 +18,6 @@ import zone.rong.dexterity.Dexterity;
 import zone.rong.dexterity.api.skill.SkillType;
 
 import java.util.function.Consumer;
-import java.util.function.Predicate;
 
 public final class DexterityAPI {
 
@@ -91,22 +87,24 @@ public final class DexterityAPI {
 
     public static class Skills {
 
-        public static final SkillType ALCHEMY = new SkillType("alchemy", TextFormatting.RED);
-        public static final SkillType MINING = new SkillType("mining", TextFormatting.GRAY);
+        public static final SkillType ALCHEMY = new SkillType("alchemy", 16716947);
+        public static final SkillType MINING = new SkillType("mining", 6589843);
+        public static final SkillType SWORDS = new SkillType("swords", 3264206);
 
         public static void init(final IForgeRegistry<SkillType> registry) {
             initAlchemy();
             initMining();
+            initSwords();
             registry.registerAll(ALCHEMY, MINING);
         }
 
         private static void initAlchemy() {
-            MINING.onToastRender(() -> new ItemStack(Items.POTION), stack -> ((itemRenderer, heightOfToast, widthOfToast) -> itemRenderer.renderItemIntoGUI(stack, 8, 8)));
+            MINING.onToastRender(() -> new ItemStack(Items.POTION), stack -> (itemRenderer, heightOfToast, widthOfToast) -> itemRenderer.renderItemIntoGUI(stack, 8, 8));
             ALCHEMY.addCompatibility(Block.class, Blocks.BREWING_STAND).addPredicateXP(Potion.class, p -> p.getEffects().stream().anyMatch(e -> e.getPotion().isBeneficial()), 20);
         }
 
         private static void initMining() {
-            MINING.onToastRender(() -> new ItemStack(Items.DIAMOND_PICKAXE), stack -> ((itemRenderer, heightOfToast, widthOfToast) -> itemRenderer.renderItemIntoGUI(stack, 8, 8)));
+            MINING.onToastRender(() -> new ItemStack(Items.DIAMOND_PICKAXE), stack -> (itemRenderer, heightOfToast, widthOfToast) -> itemRenderer.renderItemIntoGUI(stack, 8, 8));
             MINING.addPredicateCompatibility(Item.class, PickaxeItem.class::isInstance)
                     .addTagXP(Block.class, Tags.Blocks.STONE, 1)
                     .addXP(Block.class, Blocks.NETHERRACK, 2)
@@ -143,6 +141,12 @@ public final class DexterityAPI {
                     .addXP(Material.class, Material.SHULKER, 500)
                     .addXP(Material.class, Material.ROCK, 2); // TODO: 1.16 - REPAIR_STATION
 
+        }
+
+        private static void initSwords() {
+            SWORDS.onToastRender(() -> new ItemStack(Items.DIAMOND_SWORD), stack -> (itemRenderer, heightOfToast, widthOfToast) -> itemRenderer.renderItemIntoGUI(stack, 8, 8));
+            SWORDS.addPredicateCompatibility(Item.class, SwordItem.class::isInstance);
+            SWORDS.addXP(EntityType.class, EntityType.VILLAGER, 20);
         }
 
     }

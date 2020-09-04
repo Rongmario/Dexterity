@@ -28,7 +28,7 @@ public class LevelUpToast implements IToast {
 
     @Override
     public Visibility draw(ToastGui gui, long startTime) {
-        int colour = skillType.getColour().getColor();
+        int colour = skillType.getColour();
         RenderSystem.color3f((colour >> 16) / (float) 255, ((colour >> 8) & 255) / (float) 255, (colour & 255) / (float) 255);
         gui.getMinecraft().textureManager.bindTexture(TEXTURE_TOASTS);
         gui.blit(0, 0, 0, 32, 160, 32);
