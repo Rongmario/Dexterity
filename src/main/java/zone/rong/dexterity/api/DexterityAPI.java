@@ -95,7 +95,7 @@ public final class DexterityAPI {
             initAlchemy();
             initMining();
             initSwords();
-            registry.registerAll(ALCHEMY, MINING);
+            registry.registerAll(ALCHEMY, MINING, SWORDS);
         }
 
         private static void initAlchemy() {

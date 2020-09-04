@@ -11,16 +11,17 @@ import zone.rong.dexterity.api.capability.DexterityCapabilities;
 
 public class Events {
 
-    private static IEventBus forgeBus = Dexterity.INSTANCE.getForgeBus();
+    private static final IEventBus forgeBus = Dexterity.INSTANCE.getForgeBus();
 
     public static void init() {
-        forgeBus.addListener(Events::rewardXPOnEntityKilled);
+        forgeBus.addListener(Events::onLivingDeath);
     }
 
-    private static void rewardXPOnEntityKilled(LivingDeathEvent event) {
+    private static void onLivingDeath(LivingDeathEvent event) {
         Entity source = event.getSource().getImmediateSource();
         if (source instanceof PlayerEntity) {
-            source.getCapability(DexterityCapabilities.SKILL_HOLDER).ifPresent(holder -> holder.addXP(EntityType.class, event.getEntity().getType(), Item.class, ((PlayerEntity) source).getHeldItemMainhand().getItem()));
+            PlayerEntity player = (PlayerEntity) source;
+            source.getCapability(DexterityCapabilities.SKILL_HOLDER).ifPresent(holder -> holder.addXP(EntityType.class, event.getEntity().getType(), Item.class, player.getHeldItemMainhand().getItem()));
         }
     }
 
