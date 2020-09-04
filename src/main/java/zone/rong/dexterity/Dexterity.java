@@ -9,6 +9,7 @@ import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import zone.rong.dexterity.api.DexterityAPI;
+import zone.rong.dexterity.api.skill.SkillCache;
 import zone.rong.dexterity.api.skill.SkillType;
 import zone.rong.dexterity.api.capability.DexterityCapabilities;
 import zone.rong.dexterity.networking.DexterityChannel;
@@ -43,6 +44,7 @@ public class Dexterity {
         modBus.addListener(this::onNewRegistry);
         modBus.addGenericListener(SkillType.class, this::onSkillRegistry);
         modBus.addListener(this::onCommonSetup);
+        SkillCache.init();
         Events.init();
     }
 

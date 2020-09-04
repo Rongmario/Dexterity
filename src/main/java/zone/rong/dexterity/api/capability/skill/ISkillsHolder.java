@@ -10,7 +10,7 @@ public interface ISkillsHolder {
     Collection<SkillContainer> getContainers();
 
     /**
-     * @return -1 for unsuccessful (not comptaible - hence do not try).
+     * @return -1 for unsuccessful (not compatible - hence do not try).
      * 0 for unsuccessful, but do retry with different parameters. More than 0 would be the amount of xp added.
      */
     <XP, C> int addXP(Class<XP> xpClass, XP xpObject, Class<C> compatibleClass, C compatibleObject);

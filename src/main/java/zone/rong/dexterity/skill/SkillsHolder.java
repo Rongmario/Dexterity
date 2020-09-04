@@ -1,12 +1,8 @@
 package zone.rong.dexterity.skill;
 
-import com.google.common.cache.Cache;
-import com.google.common.cache.CacheBuilder;
 import com.google.common.collect.ImmutableSet;
 import it.unimi.dsi.fastutil.objects.Object2ObjectMap;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
-import it.unimi.dsi.fastutil.objects.ObjectArrayList;
-import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.integrated.IntegratedServer;
@@ -17,19 +13,13 @@ import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.util.text.event.HoverEvent;
 import net.minecraftforge.fml.network.PacketDistributor;
 import org.apache.commons.lang3.tuple.Pair;
+import zone.rong.dexterity.api.skill.SkillCache;
 import zone.rong.dexterity.api.skill.SkillType;
 import zone.rong.dexterity.api.capability.skill.ISkillsHolder;
 import zone.rong.dexterity.networking.DexterityChannel;
 import zone.rong.dexterity.networking.packets.S2CLevelUp;
 
 import java.util.Collection;
-import java.util.Comparator;
-import java.util.List;
-import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.stream.Collectors;
 
 import static zone.rong.dexterity.api.DexterityAPI.Registries.SKILLS;
 
@@ -38,7 +28,6 @@ public class SkillsHolder implements ISkillsHolder {
     private final ServerPlayerEntity player;
 
     private final Object2ObjectMap<SkillType, SkillContainer> skills;
-    private final Cache<?, Pair<SkillType, Integer>> internalCache;
 
     private long totalXP;
 
@@ -48,7 +37,6 @@ public class SkillsHolder implements ISkillsHolder {
     public SkillsHolder(ServerPlayerEntity player) {
         this.player = player;
         this.skills = Util.make(new Object2ObjectOpenHashMap<>(SKILLS.getKeys().size()), map -> SKILLS.forEach(s -> map.put(s, new SkillContainer(s))));
-        this.internalCache = CacheBuilder.newBuilder().concurrencyLevel(2).maximumSize(32).weakKeys().expireAfterAccess(30, TimeUnit.SECONDS).build();
     }
 
     void check(SkillContainer skillContainer) {
@@ -90,26 +78,11 @@ public class SkillsHolder implements ISkillsHolder {
 
     @Override
     public <XP> int addXP(Class<XP> xpClass, XP xpObject) {
-        try {
-            Pair<SkillType, Integer> pair = ((Cache<XP, Pair<SkillType, Integer>>) internalCache).get(xpObject, () -> {
-                SkillType type = null;
-                int resultXP = 0;
-                for (SkillType skillType : this.skills.keySet()) {
-                    int xp = skillType.getXP(xpClass, xpObject);
-                    if (resultXP < xp) {
-                        type = skillType;
-                        resultXP = xp;
-                    }
-                }
-                if (type != null) {
-                    addXP(type, resultXP);
-                }
-                return Pair.of(type, resultXP);
-            });
-            return pair.getRight() != 0 ? addXP(pair.getLeft(), pair.getRight()) : 0;
-        } catch (ExecutionException e) {
-            throw new RuntimeException(e.getCause());
+        final Pair<SkillType, Integer> pair = SkillCache.retrieveXP(xpClass, xpObject, this.skills.keySet());
+        if (pair.getLeft() != null) {
+            addXP(pair.getLeft(), pair.getRight());
         }
+        return pair.getRight();
     }
 
     @Override
