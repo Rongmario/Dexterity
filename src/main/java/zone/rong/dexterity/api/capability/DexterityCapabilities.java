@@ -13,11 +13,11 @@ import zone.rong.dexterity.Dexterity;
 import zone.rong.dexterity.api.DexterityAPI;
 import zone.rong.dexterity.api.capability.world.IArtificialBlocksStore;
 import zone.rong.dexterity.api.capability.skill.IGlintMarker;
-import zone.rong.dexterity.api.capability.skill.ISkillsHolder;
+import zone.rong.dexterity.api.capability.skill.IDexterityManager;
 import zone.rong.dexterity.api.skill.SkillType;
 import zone.rong.dexterity.skill.GlintMarker;
 import zone.rong.dexterity.skill.SkillContainer;
-import zone.rong.dexterity.skill.SkillsHolder;
+import zone.rong.dexterity.skill.DexterityManager;
 import zone.rong.dexterity.world.ArtificialBlocksStore;
 
 public final class DexterityCapabilities {
@@ -26,8 +26,8 @@ public final class DexterityCapabilities {
     public static final ResourceLocation GLINT_MARKER_ID = new ResourceLocation(Dexterity.MOD_ID, "glint_marker");
     public static final ResourceLocation ARTIFICIAL_BLOCKS_STORE_ID = new ResourceLocation(Dexterity.MOD_ID, "artificial_blocks_store");
 
-    @CapabilityInject(ISkillsHolder.class)
-    public static final Capability<ISkillsHolder> SKILL_HOLDER;
+    @CapabilityInject(IDexterityManager.class)
+    public static final Capability<IDexterityManager> SKILL_HOLDER;
 
     @CapabilityInject(IGlintMarker.class)
     public static final Capability<IGlintMarker> GLINT_MARKER;
@@ -48,10 +48,10 @@ public final class DexterityCapabilities {
     public static void register() {
         Dexterity.LOGGER.info("Juicy capabilities are being registered right now...");
 
-        CapabilityManager.INSTANCE.register(ISkillsHolder.class, new Capability.IStorage<ISkillsHolder>() {
+        CapabilityManager.INSTANCE.register(IDexterityManager.class, new Capability.IStorage<IDexterityManager>() {
 
             @Override
-            public INBT writeNBT(Capability<ISkillsHolder> capability, ISkillsHolder instance, Direction side) {
+            public INBT writeNBT(Capability<IDexterityManager> capability, IDexterityManager instance, Direction side) {
                 CompoundNBT holderTag = new CompoundNBT();
                 CompoundNBT playerTag = new CompoundNBT();
                 playerTag.putInt(DexterityAPI.NBT.LEVEL_TAG, instance.getLevel());
@@ -69,7 +69,7 @@ public final class DexterityCapabilities {
             }
 
             @Override
-            public void readNBT(Capability<ISkillsHolder> capability, ISkillsHolder instance, Direction side, INBT nbt) {
+            public void readNBT(Capability<IDexterityManager> capability, IDexterityManager instance, Direction side, INBT nbt) {
                 for (String key : ((CompoundNBT) nbt).keySet()) {
                     if (key.equals(DexterityAPI.NBT.PLAYER_STATS_TAG)) {
                         CompoundNBT playerTag = ((CompoundNBT) nbt).getCompound(key);
@@ -86,9 +86,9 @@ public final class DexterityCapabilities {
                 }
             }
 
-        }, () -> new SkillsHolder(null));
+        }, () -> new DexterityManager(null));
         DexterityAPI.attachPlayerCapability(true, event -> {
-            final ISkillsHolder skillsHolder = new SkillsHolder((ServerPlayerEntity) event.getObject());
+            final IDexterityManager skillsHolder = new DexterityManager((ServerPlayerEntity) event.getObject());
             event.addCapability(SKILLS_HOLDER_ID, createProvider(SKILL_HOLDER, skillsHolder, false));
         });
         DexterityAPI.onPlayerClone(true, event -> event.getOriginal().getCapability(SKILL_HOLDER).ifPresent(original -> event.getPlayer().getCapability(SKILL_HOLDER).ifPresent(current -> {

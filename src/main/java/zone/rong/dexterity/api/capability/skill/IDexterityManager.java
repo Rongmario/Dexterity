@@ -5,7 +5,7 @@ import zone.rong.dexterity.skill.SkillContainer;
 
 import java.util.Collection;
 
-public interface ISkillsHolder {
+public interface IDexterityManager {
 
     Collection<SkillContainer> getContainers();
 

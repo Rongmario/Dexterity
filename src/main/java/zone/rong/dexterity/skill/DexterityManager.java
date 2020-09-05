@@ -15,7 +15,7 @@ import net.minecraftforge.fml.network.PacketDistributor;
 import org.apache.commons.lang3.tuple.Pair;
 import zone.rong.dexterity.api.skill.SkillCache;
 import zone.rong.dexterity.api.skill.SkillType;
-import zone.rong.dexterity.api.capability.skill.ISkillsHolder;
+import zone.rong.dexterity.api.capability.skill.IDexterityManager;
 import zone.rong.dexterity.networking.DexterityChannel;
 import zone.rong.dexterity.networking.packets.S2CLevelUp;
 
@@ -23,7 +23,7 @@ import java.util.Collection;
 
 import static zone.rong.dexterity.api.DexterityAPI.Registries.SKILLS;
 
-public class SkillsHolder implements ISkillsHolder {
+public class DexterityManager implements IDexterityManager {
 
     private final ServerPlayerEntity player;
 
@@ -34,7 +34,7 @@ public class SkillsHolder implements ISkillsHolder {
     private int level;
     private int currentXP;
 
-    public SkillsHolder(ServerPlayerEntity player) {
+    public DexterityManager(ServerPlayerEntity player) {
         this.player = player;
         this.skills = Util.make(new Object2ObjectOpenHashMap<>(SKILLS.getKeys().size()), map -> SKILLS.forEach(s -> map.put(s, new SkillContainer(s))));
     }
